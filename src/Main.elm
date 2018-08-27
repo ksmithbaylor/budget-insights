@@ -15,7 +15,7 @@ import Debug
 main =
     Browser.document
         { init = init
-        , view = view
+        , view = viewDocument
         , update = update
         , subscriptions = subscriptions
         }
@@ -25,11 +25,12 @@ main =
 -- MODEL
 
 
-type alias Model =
-    { token : Maybe String
-    , budgets : Maybe (List Budget)
-    , error : Maybe Http.Error
-    }
+type Model
+    = Initial
+    | HaveToken String
+    | HaveBudgets (List Budget)
+    | SelectedBudget Budget
+    | SomethingWentWrong Http.Error
 
 
 
@@ -38,10 +39,7 @@ type alias Model =
 
 init : () -> ( Model, Cmd Msg )
 init flags =
-    ( { token = Nothing
-      , budgets = Nothing
-      , error = Nothing
-      }
+    ( Initial
     , fetchToken GotToken
     )
 
@@ -53,22 +51,26 @@ init flags =
 type Msg
     = GotToken (Result Http.Error String)
     | GotBudgets (Result Http.Error (List Budget))
+    | SelectBudget Budget
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
         GotToken (Ok token) ->
-            ( { model | token = Just token }, fetchBudgets token GotBudgets )
+            ( HaveToken token, fetchBudgets token GotBudgets )
 
         GotToken (Err error) ->
-            ( { model | token = Nothing, error = Just error }, Cmd.none )
+            ( SomethingWentWrong error, Cmd.none )
 
         GotBudgets (Ok budgets) ->
-            ( { model | budgets = Just budgets }, Cmd.none )
+            ( HaveBudgets budgets, Cmd.none )
 
         GotBudgets (Err error) ->
-            ( { model | budgets = Nothing, error = Just error }, Cmd.none )
+            ( SomethingWentWrong error, Cmd.none )
+
+        SelectBudget budget ->
+            ( SelectedBudget budget, Cmd.none )
 
 
 
@@ -84,12 +86,12 @@ subscriptions model =
 -- VIEW
 
 
-view : Model -> Browser.Document Msg
-view model =
+viewDocument : Model -> Browser.Document Msg
+viewDocument model =
     { title = "Hello"
     , body =
         [ styleTag
-        , viewWithErrorHandling model
+        , view model
         ]
     }
 
@@ -99,14 +101,38 @@ styleTag =
     Html.node "link" [ Html.Attributes.rel "stylesheet", Html.Attributes.href "main.css" ] []
 
 
-viewWithErrorHandling : Model -> Html Msg
-viewWithErrorHandling model =
-    case model.error of
-        Nothing ->
-            viewApp model
+view : Model -> Html Msg
+view model =
+    let
+        loading =
+            text "Loading..."
+    in
+        case model of
+            Initial ->
+                loading
 
-        Just err ->
-            viewError err
+            HaveToken _ ->
+                loading
+
+            HaveBudgets budgets ->
+                viewBudgets budgets
+
+            SelectedBudget budgets ->
+                loading
+
+            SomethingWentWrong error ->
+                viewError error
+
+
+viewBudgets : List Budget -> Html Msg
+viewBudgets budgets =
+    div [ class "budget-list" ] <|
+        List.map viewBudget budgets
+
+
+viewBudget : Budget -> Html Msg
+viewBudget budget =
+    div [ class "budget" ] [ text budget.name ]
 
 
 viewError : Http.Error -> Html msg
@@ -118,7 +144,7 @@ viewError err =
                     "Request timed out"
 
                 Http.NetworkError ->
-                    "Generic network error"
+                    "Something went wrong with a request"
 
                 Http.BadUrl str ->
                     "Badly-formed URL: " ++ str
@@ -129,8 +155,3 @@ viewError err =
                 Http.BadPayload mess _ ->
                     "Error decoding response: " ++ mess
         ]
-
-
-viewApp : Model -> Html Msg
-viewApp model =
-    div [] [ text <| Debug.toString model.budgets ]
