@@ -5,7 +5,7 @@ import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
 import Http
-import Json.Decode as Decode exposing (Decoder)
+import API exposing (fetchToken)
 
 
 -- MAIN
@@ -36,22 +36,7 @@ type alias Model =
 
 init : () -> ( Model, Cmd Msg )
 init flags =
-    ( { token = Nothing, error = Nothing }, fetchToken )
-
-
-
--- TOKEN FETCH
-
-
-fetchToken : Cmd Msg
-fetchToken =
-    Http.get "http://localhost:4000/token" decodeToken
-        |> Http.send GotToken
-
-
-decodeToken : Decoder String
-decodeToken =
-    Decode.field "token" Decode.string
+    ( { token = Nothing, error = Nothing }, fetchToken GotToken )
 
 
 
