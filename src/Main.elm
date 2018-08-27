@@ -5,7 +5,8 @@ import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
 import Http
-import API exposing (fetchToken)
+import API exposing (Budget, fetchToken, fetchBudgets)
+import Debug
 
 
 -- MAIN
@@ -26,6 +27,7 @@ main =
 
 type alias Model =
     { token : Maybe String
+    , budgets : Maybe (List Budget)
     , error : Maybe Http.Error
     }
 
@@ -36,7 +38,12 @@ type alias Model =
 
 init : () -> ( Model, Cmd Msg )
 init flags =
-    ( { token = Nothing, error = Nothing }, fetchToken GotToken )
+    ( { token = Nothing
+      , budgets = Nothing
+      , error = Nothing
+      }
+    , fetchToken GotToken
+    )
 
 
 
@@ -45,16 +52,23 @@ init flags =
 
 type Msg
     = GotToken (Result Http.Error String)
+    | GotBudgets (Result Http.Error (List Budget))
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
         GotToken (Ok token) ->
-            ( { model | token = Just token }, Cmd.none )
+            ( { model | token = Just token }, fetchBudgets token GotBudgets )
 
         GotToken (Err error) ->
             ( { model | token = Nothing, error = Just error }, Cmd.none )
+
+        GotBudgets (Ok budgets) ->
+            ( { model | budgets = Just budgets }, Cmd.none )
+
+        GotBudgets (Err error) ->
+            ( { model | budgets = Nothing, error = Just error }, Cmd.none )
 
 
 
@@ -119,4 +133,4 @@ viewError err =
 
 viewApp : Model -> Html Msg
 viewApp model =
-    div [] [ text <| Maybe.withDefault "NO TOKEN" model.token ]
+    div [] [ text <| Debug.toString model.budgets ]
