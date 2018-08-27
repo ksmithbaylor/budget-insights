@@ -58,9 +58,48 @@ view : Model -> Browser.Document Msg
 view model =
     { title = "Hello"
     , body =
-        [ div [] [ text model.message ]
+        [ styleTag
+        , handleError model
         ]
     }
+
+
+styleTag : Html msg
+styleTag =
+    Html.node "link" [ Html.Attributes.rel "stylesheet", Html.Attributes.href "main.css" ] []
+
+
+handleError : Model -> Html Msg
+handleError model =
+    case model.error of
+        Nothing ->
+            viewApp model
+
+        Just err ->
+            let
+                message =
+                    case err of
+                        Http.Timeout ->
+                            "Request timed out"
+
+                        Http.NetworkError ->
+                            "Generic network error"
+
+                        Http.BadUrl str ->
+                            "Badly-formed URL: " ++ str
+
+                        Http.BadStatus _ ->
+                            "Non-200 status code"
+
+                        Http.BadPayload mess _ ->
+                            "Error decoding response: " ++ mess
+            in
+                div [ class "error" ] [ text message ]
+
+
+viewApp : Model -> Html Msg
+viewApp model =
+    div [] [ text <| Maybe.withDefault "NO TOKEN" model.token ]
 
 
 
