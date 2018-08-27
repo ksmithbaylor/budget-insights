@@ -1,0 +1,12 @@
+{
+  "name": "long-term-plans",
+  "version": "1.0.0",
+  "main": "index.js",
+  "author": "Kevin Smith <ksmithbaylor@gmail.com>",
+  "license": "MIT",
+  "dependencies": {
+    "cors": "^2.8.4",
+    "dotenv": "^6.0.0",
+    "express": "^4.16.3"
+  }
+}

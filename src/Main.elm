@@ -5,7 +5,7 @@ import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
 import Http
-import Json.Decode as Decode
+import Json.Decode as Decode exposing (Decoder)
 
 
 -- MAIN
@@ -25,7 +25,9 @@ main =
 
 
 type alias Model =
-    { message : String }
+    { token : Maybe String
+    , error : Maybe Http.Error
+    }
 
 
 
@@ -34,7 +36,22 @@ type alias Model =
 
 init : () -> ( Model, Cmd Msg )
 init flags =
-    ( { message = "hello world" }, Cmd.none )
+    ( { token = Nothing, error = Nothing }, fetchToken )
+
+
+
+-- TOKEN FETCH
+
+
+fetchToken : Cmd Msg
+fetchToken =
+    Http.get "http://localhost:4000/token" decodeToken
+        |> Http.send GotToken
+
+
+decodeToken : Decoder String
+decodeToken =
+    Decode.field "token" Decode.string
 
 
 
@@ -42,12 +59,17 @@ init flags =
 
 
 type Msg
-    = NoOp
+    = GotToken (Result Http.Error String)
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
-    ( model, Cmd.none )
+    case msg of
+        GotToken (Ok token) ->
+            ( { model | token = Just token }, Cmd.none )
+
+        GotToken (Err error) ->
+            ( { model | token = Nothing, error = Just error }, Cmd.none )
 
 
 
