@@ -57,25 +57,20 @@ decodeBudgets =
 -- YNAB API
 
 
+ynabRequest : String -> String -> Decoder a -> Http.Request a
+ynabRequest token path decoder =
+    Http.request
+        { method = "GET"
+        , headers = [ Http.header "Authorization" ("Bearer " ++ token) ]
+        , url = "https://api.youneedabudget.com/v1" ++ path
+        , body = Http.emptyBody
+        , expect = Http.expectJson decoder
+        , timeout = Nothing
+        , withCredentials = False
+        }
+
+
 fetchBudgets : String -> (Result Http.Error (List Budget) -> msg) -> Cmd msg
 fetchBudgets token msg =
-    { method = "GET"
-    , headers = [ authHeader token ]
-    , url = ynabURL "/budgets"
-    , body = Http.emptyBody
-    , expect = Http.expectJson decodeBudgets
-    , timeout = Nothing
-    , withCredentials = False
-    }
-        |> Http.request
+    ynabRequest token "/budgets" decodeBudgets
         |> Http.send msg
-
-
-authHeader : String -> Http.Header
-authHeader token =
-    Http.header "Authorization" ("Bearer " ++ token)
-
-
-ynabURL : String -> String
-ynabURL path =
-    "https://api.youneedabudget.com/v1" ++ path
