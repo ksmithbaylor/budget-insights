@@ -58,6 +58,15 @@ update msg model =
 
 
 
+-- SUBSCRIPTIONS
+
+
+subscriptions : Model -> Sub Msg
+subscriptions model =
+    Sub.none
+
+
+
 -- VIEW
 
 
@@ -66,7 +75,7 @@ view model =
     { title = "Hello"
     , body =
         [ styleTag
-        , handleError model
+        , viewWithErrorHandling model
         ]
     }
 
@@ -76,43 +85,38 @@ styleTag =
     Html.node "link" [ Html.Attributes.rel "stylesheet", Html.Attributes.href "main.css" ] []
 
 
-handleError : Model -> Html Msg
-handleError model =
+viewWithErrorHandling : Model -> Html Msg
+viewWithErrorHandling model =
     case model.error of
         Nothing ->
             viewApp model
 
         Just err ->
-            let
-                message =
-                    case err of
-                        Http.Timeout ->
-                            "Request timed out"
+            viewError err
 
-                        Http.NetworkError ->
-                            "Generic network error"
 
-                        Http.BadUrl str ->
-                            "Badly-formed URL: " ++ str
+viewError : Http.Error -> Html msg
+viewError err =
+    div [ class "error" ]
+        [ text <|
+            case err of
+                Http.Timeout ->
+                    "Request timed out"
 
-                        Http.BadStatus _ ->
-                            "Non-200 status code"
+                Http.NetworkError ->
+                    "Generic network error"
 
-                        Http.BadPayload mess _ ->
-                            "Error decoding response: " ++ mess
-            in
-                div [ class "error" ] [ text message ]
+                Http.BadUrl str ->
+                    "Badly-formed URL: " ++ str
+
+                Http.BadStatus _ ->
+                    "Non-200 status code"
+
+                Http.BadPayload mess _ ->
+                    "Error decoding response: " ++ mess
+        ]
 
 
 viewApp : Model -> Html Msg
 viewApp model =
     div [] [ text <| Maybe.withDefault "NO TOKEN" model.token ]
-
-
-
--- SUBSCRIPTIONS
-
-
-subscriptions : Model -> Sub Msg
-subscriptions model =
-    Sub.none
