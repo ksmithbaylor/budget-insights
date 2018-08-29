@@ -7,6 +7,7 @@ import Html.Events exposing (..)
 import Http
 import API exposing (Budget, fetchToken, fetchBudgets)
 import Debug
+import ISO8601
 
 
 -- MAIN
@@ -128,13 +129,31 @@ viewBudgets : List Budget -> Html Msg
 viewBudgets budgets =
     div [ class "budget-list" ]
         [ h1 [] [ text "Available Budgets" ]
-        , div [ class "flow" ] (List.map viewBudget budgets)
+        , div [ class "flow" ]
+            (budgets
+                |> List.sortBy (.lastModified >> ISO8601.toString)
+                |> List.reverse
+                |> List.map viewBudget
+            )
         ]
 
 
 viewBudget : Budget -> Html Msg
 viewBudget budget =
-    div [ class "budget shadow-box" ] [ text budget.name ]
+    div [ class "budget shadow-box" ]
+        [ div [ class "budget-name" ] [ text budget.name ]
+        , div []
+            [ span [] [ text "Last Modified: " ]
+            , span [ class "light" ]
+                [ text <|
+                    (ISO8601.toString budget.lastModified
+                        |> String.split "T"
+                        |> List.head
+                        |> Maybe.withDefault ""
+                    )
+                ]
+            ]
+        ]
 
 
 viewError : Http.Error -> Html msg

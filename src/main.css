@@ -16,6 +16,14 @@ body {
   margin-top: 1em;
 }
 
+.bold {
+  font-weight: bold;
+}
+
+.light {
+  color: #aaa;
+}
+
 .shadow-box {
   border: 1px solid #ccc;
   box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.1);
@@ -29,7 +37,13 @@ body {
 .budget {
   background-color: white;
   padding: 0.5em 1em;
-  max-width: 10em;
+  width: fit-content;
+  width: -moz-fit-content;
   user-select: none;
   -moz-user-select: none;
+}
+
+.budget-name {
+  font-weight: bold;
+  font-size: 1.2em;
 }
