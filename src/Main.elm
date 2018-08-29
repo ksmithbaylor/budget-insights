@@ -182,12 +182,21 @@ subscriptions model =
 
 viewDocument : Model -> Browser.Document Msg
 viewDocument model =
-    { title = "Hello"
-    , body =
-        [ styleTag
-        , view model
-        ]
-    }
+    let
+        title =
+            case model of
+                Initialized { activeBudget } ->
+                    "Budget Insights | " ++ activeBudget.name
+
+                _ ->
+                    "Budget Insights"
+    in
+        { title = title
+        , body =
+            [ styleTag
+            , view model
+            ]
+        }
 
 
 styleTag : Html msg
