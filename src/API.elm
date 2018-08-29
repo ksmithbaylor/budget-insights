@@ -5,6 +5,7 @@ import Json.Decode as Decode exposing (..)
 import Json.Decode.Extra exposing (fromResult)
 import ISO8601 exposing (Time)
 import Date exposing (Date)
+import Data.Money
 
 
 -- TOKEN FETCH
