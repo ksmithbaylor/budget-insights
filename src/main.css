@@ -1,6 +1,7 @@
 body {
-  background-color: #eee;
+  background-color: #eaeaea;
   font-family: "Avenir", "Helvetica", "Arial", sans-serif;
+  padding: 1em;
 }
 
 .error {
@@ -9,4 +10,26 @@ body {
   max-width: 400px;
   text-align: center;
   margin: 2em auto;
+}
+
+.flow > * + * {
+  margin-top: 1em;
+}
+
+.shadow-box {
+  border: 1px solid #ccc;
+  box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.1);
+  transition: box-shadow 150ms ease;
+}
+
+.shadow-box:hover {
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.12), 0 2px 4px 0 rgba(0, 0, 0, 0.08);
+}
+
+.budget {
+  background-color: white;
+  padding: 0.5em 1em;
+  max-width: 10em;
+  user-select: none;
+  -moz-user-select: none;
 }

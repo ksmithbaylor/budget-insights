@@ -126,13 +126,15 @@ view model =
 
 viewBudgets : List Budget -> Html Msg
 viewBudgets budgets =
-    div [ class "budget-list" ] <|
-        List.map viewBudget budgets
+    div [ class "budget-list" ]
+        [ h1 [] [ text "Available Budgets" ]
+        , div [ class "flow" ] (List.map viewBudget budgets)
+        ]
 
 
 viewBudget : Budget -> Html Msg
 viewBudget budget =
-    div [ class "budget" ] [ text budget.name ]
+    div [ class "budget shadow-box" ] [ text budget.name ]
 
 
 viewError : Http.Error -> Html msg
