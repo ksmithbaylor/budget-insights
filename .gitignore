@@ -1,5 +1,6 @@
 elm.js
 elm-stuff
-.vscode
+elm-package.json
 node_modules
 .env
+.vscode
