@@ -32,21 +32,27 @@ type alias Token =
     String
 
 
+type alias DashboardState =
+    { budgets : Dict BudgetID Budget
+    , activeBudget : Budget
+    , apiToken : Token
+    }
+
+
+type alias PickingBudgetState =
+    { budgets : Dict BudgetID Budget, apiToken : Token }
+
+
 type Model
     = Initializing (Maybe BudgetID) (Maybe Token)
-    | PickingBudgets { budgets : Dict BudgetID Budget, apiToken : Token }
-    | Initialized
-        { budgets : Dict BudgetID Budget
-        , activeBudget : Budget
-        , apiToken : Token
-        }
+    | PickingBudget PickingBudgetState
+    | Initialized DashboardState
     | SomethingWentWrong Http.Error
 
 
 init : () -> ( Model, Cmd Msg )
 init flags =
-    -- ( Initializing (Just "1b1f448f-8750-40a9-b744-f772f4898b91") Nothing
-    ( Initializing Nothing Nothing
+    ( Initializing (Just "1b1f448f-8750-40a9-b744-f772f4898b91") Nothing
     , fetchToken GotToken
     )
 
@@ -58,19 +64,28 @@ init flags =
 type Msg
     = GotToken (Result Http.Error String)
     | GotBudgets (Result Http.Error (Dict BudgetID Budget))
-    | SelectBudget Budget
+    | SelectedBudget Budget
+    | GoBack
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
+        GoBack ->
+            case model of
+                Initialized { budgets, apiToken } ->
+                    ( PickingBudget { budgets = budgets, apiToken = apiToken }, Cmd.none )
+
+                other ->
+                    ( other, Cmd.none )
+
         GotToken (Ok token) ->
             case model of
                 Initializing budgetID _ ->
                     ( Initializing budgetID (Just token), fetchBudgets token GotBudgets )
 
-                PickingBudgets state ->
-                    ( PickingBudgets { state | apiToken = token }, Cmd.none )
+                PickingBudget state ->
+                    ( PickingBudget { state | apiToken = token }, Cmd.none )
 
                 Initialized state ->
                     ( Initialized { state | apiToken = token }, Cmd.none )
@@ -93,7 +108,7 @@ update msg model =
                     in
                         case Dict.get budgetID budgets of
                             Nothing ->
-                                ( PickingBudgets
+                                ( PickingBudget
                                     { budgets = budgets
                                     , apiToken = token
                                     }
@@ -109,8 +124,8 @@ update msg model =
                                 , Cmd.none
                                 )
 
-                PickingBudgets { apiToken } ->
-                    ( PickingBudgets { budgets = budgets, apiToken = apiToken }, Cmd.none )
+                PickingBudget { apiToken } ->
+                    ( PickingBudget { budgets = budgets, apiToken = apiToken }, Cmd.none )
 
                 Initialized { activeBudget, apiToken } ->
                     case Dict.get activeBudget.id budgets of
@@ -124,7 +139,7 @@ update msg model =
                             )
 
                         Nothing ->
-                            ( PickingBudgets
+                            ( PickingBudget
                                 { budgets = budgets
                                 , apiToken = apiToken
                                 }
@@ -137,9 +152,9 @@ update msg model =
         GotBudgets (Err error) ->
             ( SomethingWentWrong error, Cmd.none )
 
-        SelectBudget budget ->
+        SelectedBudget budget ->
             case model of
-                PickingBudgets { budgets, apiToken } ->
+                PickingBudget { budgets, apiToken } ->
                     ( Initialized
                         { budgets = budgets
                         , activeBudget = budget
@@ -182,22 +197,18 @@ styleTag =
 
 view : Model -> Html Msg
 view model =
-    let
-        loading =
-            text "Loading..."
-    in
-        case model of
-            Initializing _ _ ->
-                loading
+    case model of
+        Initializing _ _ ->
+            div [] []
 
-            PickingBudgets { budgets } ->
-                viewBudgets budgets
+        PickingBudget { budgets } ->
+            viewBudgets budgets
 
-            Initialized _ ->
-                loading
+        Initialized state ->
+            viewDashboard state
 
-            SomethingWentWrong error ->
-                viewError error
+        SomethingWentWrong error ->
+            viewError error
 
 
 viewBudgets : Dict BudgetID Budget -> Html Msg
@@ -217,7 +228,7 @@ viewBudgets budgets =
 
 viewBudget : Budget -> Html Msg
 viewBudget budget =
-    div [ class "budget shadow-box" ]
+    div [ class "budget shadow-box", onClick (SelectedBudget budget) ]
         [ div [ class "budget-name" ] [ text budget.name ]
         , div []
             [ span [] [ text "Last Modified: " ]
@@ -231,6 +242,27 @@ viewBudget budget =
                 ]
             ]
         ]
+
+
+viewDashboard : DashboardState -> Html Msg
+viewDashboard state =
+    div [ class "dashboard" ]
+        [ viewTopBar state.activeBudget
+        , viewMain state
+        ]
+
+
+viewTopBar : Budget -> Html Msg
+viewTopBar budget =
+    div [ class "top-bar" ]
+        [ button [ class "back shadow-box", onClick GoBack ] [ text "⬅" ]
+        , span [ class "budget-name" ] [ text budget.name ]
+        ]
+
+
+viewMain : DashboardState -> Html Msg
+viewMain state =
+    div [ class "main shadow-box no-hover" ] []
 
 
 viewError : Http.Error -> Html msg

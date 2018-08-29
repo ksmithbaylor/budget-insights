@@ -1,7 +1,7 @@
 body {
   background-color: #eaeaea;
   font-family: "Avenir", "Helvetica", "Arial", sans-serif;
-  padding: 1em;
+  padding: 1rem;
 }
 
 .error {
@@ -30,13 +30,13 @@ body {
   transition: box-shadow 150ms ease;
 }
 
-.shadow-box:hover {
+.shadow-box:not(.no-hover):hover {
   box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.12), 0 2px 4px 0 rgba(0, 0, 0, 0.08);
 }
 
 .budget {
   background-color: white;
-  padding: 0.5em 1em;
+  padding: 0.5rem 1rem;
   width: fit-content;
   width: -moz-fit-content;
   user-select: none;
@@ -46,4 +46,17 @@ body {
 .budget-name {
   font-weight: bold;
   font-size: 1.2em;
+}
+
+button.back {
+  font-size: 1.5rem;
+  background-color: white;
+  display: inline-block;
+  margin-right: 1em;
+}
+
+.dashboard .main {
+  margin-top: 2rem;
+  background-color: white;
+  padding: 1rem;
 }
