@@ -1,11 +1,13 @@
-module API exposing (Budget, fetchToken, fetchBudgets)
+module API exposing (fetchToken, fetchBudgets)
 
 import Http
 import Json.Decode as Decode exposing (..)
 import Json.Decode.Extra exposing (fromResult)
 import ISO8601 exposing (Time)
 import Date exposing (Date)
+import Dict exposing (Dict)
 import Data.Money
+import Data.Budget exposing (..)
 
 
 -- TOKEN FETCH
@@ -26,32 +28,18 @@ decodeToken =
 -- API TYPES AND DECODERS
 
 
-type alias BudgetID =
-    String
-
-
-type alias Budget =
-    { id : BudgetID
-    , name : String
-    , lastModified : Time
-    , firstMonth : Date
-    , lastMonth : Date
-    }
-
-
-decodeBudget : Decoder Budget
-decodeBudget =
-    map5 Budget
-        (field "id" string)
-        (field "name" string)
-        (field "last_modified_on" (string |> andThen (fromResult << ISO8601.fromString)))
-        (field "first_month" (string |> andThen (fromResult << Date.fromIsoString)))
-        (field "last_month" (string |> andThen (fromResult << Date.fromIsoString)))
-
-
-decodeBudgets : Decoder (List Budget)
+decodeBudgets : Decoder (Dict BudgetID Budget)
 decodeBudgets =
-    field "data" (field "budgets" (list decodeBudget))
+    field "data"
+        (field "budgets"
+            (list decodeBudget
+                |> andThen
+                    (List.map (\budget -> ( budget.id, budget ))
+                        >> Dict.fromList
+                        >> succeed
+                    )
+            )
+        )
 
 
 
@@ -71,7 +59,7 @@ ynabRequest token path decoder =
         }
 
 
-fetchBudgets : String -> (Result Http.Error (List Budget) -> msg) -> Cmd msg
+fetchBudgets : String -> (Result Http.Error (Dict BudgetID Budget) -> msg) -> Cmd msg
 fetchBudgets token msg =
     ynabRequest token "/budgets" decodeBudgets
         |> Http.send msg

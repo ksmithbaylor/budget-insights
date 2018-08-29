@@ -5,9 +5,11 @@ import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
 import Http
-import API exposing (Budget, fetchToken, fetchBudgets)
+import Dict exposing (Dict)
+import API exposing (fetchToken, fetchBudgets)
 import Debug
 import ISO8601
+import Data.Budget exposing (..)
 
 
 -- MAIN
@@ -26,21 +28,25 @@ main =
 -- MODEL
 
 
+type alias Token =
+    String
+
+
 type Model
-    = Initial
-    | HaveToken String
-    | HaveBudgets (List Budget)
-    | SelectedBudget Budget
+    = Initializing (Maybe BudgetID) (Maybe Token)
+    | PickingBudgets { budgets : Dict BudgetID Budget, apiToken : Token }
+    | Initialized
+        { budgets : Dict BudgetID Budget
+        , activeBudget : Budget
+        , apiToken : Token
+        }
     | SomethingWentWrong Http.Error
-
-
-
--- INIT
 
 
 init : () -> ( Model, Cmd Msg )
 init flags =
-    ( Initial
+    -- ( Initializing (Just "1b1f448f-8750-40a9-b744-f772f4898b91") Nothing
+    ( Initializing Nothing Nothing
     , fetchToken GotToken
     )
 
@@ -51,7 +57,7 @@ init flags =
 
 type Msg
     = GotToken (Result Http.Error String)
-    | GotBudgets (Result Http.Error (List Budget))
+    | GotBudgets (Result Http.Error (Dict BudgetID Budget))
     | SelectBudget Budget
 
 
@@ -59,19 +65,91 @@ update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
         GotToken (Ok token) ->
-            ( HaveToken token, fetchBudgets token GotBudgets )
+            case model of
+                Initializing budgetID _ ->
+                    ( Initializing budgetID (Just token), fetchBudgets token GotBudgets )
+
+                PickingBudgets state ->
+                    ( PickingBudgets { state | apiToken = token }, Cmd.none )
+
+                Initialized state ->
+                    ( Initialized { state | apiToken = token }, Cmd.none )
+
+                other ->
+                    ( other, Cmd.none )
 
         GotToken (Err error) ->
             ( SomethingWentWrong error, Cmd.none )
 
         GotBudgets (Ok budgets) ->
-            ( HaveBudgets budgets, Cmd.none )
+            case model of
+                Initializing possibleBudgetID possibleToken ->
+                    let
+                        token =
+                            Maybe.withDefault "" possibleToken
+
+                        budgetID =
+                            Maybe.withDefault "BOGUS" possibleBudgetID
+                    in
+                        case Dict.get budgetID budgets of
+                            Nothing ->
+                                ( PickingBudgets
+                                    { budgets = budgets
+                                    , apiToken = token
+                                    }
+                                , Cmd.none
+                                )
+
+                            Just budget ->
+                                ( Initialized
+                                    { budgets = budgets
+                                    , activeBudget = budget
+                                    , apiToken = token
+                                    }
+                                , Cmd.none
+                                )
+
+                PickingBudgets { apiToken } ->
+                    ( PickingBudgets { budgets = budgets, apiToken = apiToken }, Cmd.none )
+
+                Initialized { activeBudget, apiToken } ->
+                    case Dict.get activeBudget.id budgets of
+                        Just budget ->
+                            ( Initialized
+                                { budgets = budgets
+                                , activeBudget = budget
+                                , apiToken = apiToken
+                                }
+                            , Cmd.none
+                            )
+
+                        Nothing ->
+                            ( PickingBudgets
+                                { budgets = budgets
+                                , apiToken = apiToken
+                                }
+                            , Cmd.none
+                            )
+
+                other ->
+                    ( other, Cmd.none )
 
         GotBudgets (Err error) ->
             ( SomethingWentWrong error, Cmd.none )
 
         SelectBudget budget ->
-            ( SelectedBudget budget, Cmd.none )
+            case model of
+                PickingBudgets { budgets, apiToken } ->
+                    ( Initialized
+                        { budgets = budgets
+                        , activeBudget = budget
+                        , apiToken = apiToken
+                        }
+                    , Cmd.none
+                    )
+
+                other ->
+                    ( other, Cmd.none )
 
 
 
@@ -109,28 +187,27 @@ view model =
             text "Loading..."
     in
         case model of
-            Initial ->
+            Initializing _ _ ->
                 loading
 
-            HaveToken _ ->
-                loading
-
-            HaveBudgets budgets ->
+            PickingBudgets { budgets } ->
                 viewBudgets budgets
 
-            SelectedBudget budgets ->
+            Initialized _ ->
                 loading
 
             SomethingWentWrong error ->
                 viewError error
 
 
-viewBudgets : List Budget -> Html Msg
+viewBudgets : Dict BudgetID Budget -> Html Msg
 viewBudgets budgets =
     div [ class "budget-list" ]
         [ h1 [] [ text "Available Budgets" ]
         , div [ class "flow" ]
             (budgets
+                |> Dict.toList
+                |> List.map Tuple.second
                 |> List.sortBy (.lastModified >> ISO8601.toString)
                 |> List.reverse
                 |> List.map viewBudget
