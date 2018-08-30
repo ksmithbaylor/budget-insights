@@ -82,7 +82,7 @@ update msg model =
                     PickingBudget budgets token
                         |> withNoCmd
 
-        -- Error handling and unexpected messages
+        -- Error handling
         ( _, GotBudgets (Err error) ) ->
             SomethingWentWrong error
                 |> withNoCmd
@@ -91,5 +91,6 @@ update msg model =
             SomethingWentWrong error
                 |> withNoCmd
 
+        -- Ignore any unexpected messages sent to the wrong page
         ( _, _ ) ->
             model |> withNoCmd
