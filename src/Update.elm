@@ -4,7 +4,7 @@ import API exposing (Token, fetchBudgets, fetchToken, usableToken)
 import Browser exposing (UrlRequest(..))
 import Browser.Navigation as Navigation
 import Cmd.Extra exposing (..)
-import Data.Budget as Budget exposing (Budget, BudgetID, Budgets)
+import Data.Budget as Budget exposing (Budget, Budgets)
 import Dict.Any as AnyDict
 import Http
 import Model exposing (Model(..))

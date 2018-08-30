@@ -1,14 +1,14 @@
 module Model exposing (DashboardState, Model(..))
 
 import API exposing (Token)
-import Data.Budget exposing (Budget, BudgetID, Budgets)
+import Data.Budget as Budget exposing (Budget, Budgets)
 import Dict.Any as AnyDict
 import Http
 
 
 type Model
-    = Initializing (Maybe BudgetID)
-    | FetchingBudgets (Maybe BudgetID) Token
+    = Initializing (Maybe Budget.ID)
+    | FetchingBudgets (Maybe Budget.ID) Token
     | PickingBudget Budgets Token
     | Dashboard DashboardState
     | SomethingWentWrong Http.Error

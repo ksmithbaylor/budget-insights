@@ -1,6 +1,6 @@
 module View.PickingBudget exposing (view)
 
-import Data.Budget exposing (Budget, BudgetID, Budgets)
+import Data.Budget as Budget exposing (Budget, Budgets)
 import Dict.Any as AnyDict
 import Html exposing (..)
 import Html.Attributes exposing (..)

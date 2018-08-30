@@ -1,6 +1,6 @@
 module API exposing (Token, fetchBudgets, fetchToken, usableToken)
 
-import Data.Budget as Budget exposing (Budget, BudgetID, Budgets, decodeBudget)
+import Data.Budget as Budget exposing (Budget, Budgets, decodeBudget)
 import Data.Money
 import Date exposing (Date)
 import Dict.Any as AnyDict

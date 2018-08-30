@@ -1,6 +1,6 @@
 module View.Dashboard exposing (view)
 
-import Data.Budget exposing (Budget, BudgetID)
+import Data.Budget as Budget exposing (Budget)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
