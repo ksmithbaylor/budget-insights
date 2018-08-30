@@ -33,7 +33,10 @@ view model =
 viewPage : Model -> Html Msg
 viewPage model =
     case model of
-        Initializing _ _ ->
+        Initializing _ ->
+            div [] []
+
+        FetchingBudgets _ _ ->
             div [] []
 
         PickingBudget budgets _ ->

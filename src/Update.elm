@@ -26,7 +26,7 @@ type Msg
 
 init : () -> Url -> Navigation.Key -> ( Model, Cmd Msg )
 init flags url key =
-    ( Initializing (Just "1b1f448f-8750-40a9-b744-f772f4898b91") Nothing
+    ( Initializing (Just "1b1f448f-8750-40a9-b744-f772f4898b91")
     , fetchToken GotToken
     )
 
@@ -34,16 +34,13 @@ init flags url key =
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case ( model, msg ) of
-        -- While loading the page
-        ( Initializing possibleBudgetID _, GotToken (Ok token) ) ->
-            Initializing possibleBudgetID (Just token)
+        -- Initial page load
+        ( Initializing possibleBudgetID, GotToken (Ok token) ) ->
+            FetchingBudgets possibleBudgetID token
                 |> withCmd (fetchBudgets token GotBudgets)
 
-        ( Initializing possibleBudgetID possibleToken, GotBudgets (Ok budgets) ) ->
-            let
-                token =
-                    usableToken possibleToken
-            in
+        -- Have a token, now fetching the list of budgets
+        ( FetchingBudgets possibleBudgetID token, GotBudgets (Ok budgets) ) ->
             case possibleBudgetID |> Maybe.andThen (\id -> Dict.get id budgets) of
                 Nothing ->
                     PickingBudget budgets token

@@ -7,7 +7,8 @@ import Http
 
 
 type Model
-    = Initializing (Maybe BudgetID) (Maybe Token)
+    = Initializing (Maybe BudgetID)
+    | FetchingBudgets (Maybe BudgetID) Token
     | PickingBudget (Dict BudgetID Budget) Token
     | Dashboard DashboardState
     | SomethingWentWrong Http.Error
