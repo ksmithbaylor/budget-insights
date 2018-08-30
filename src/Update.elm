@@ -33,8 +33,8 @@ update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case ( model, msg ) of
         -- While loading the page
-        ( Initializing budgetID _, GotToken (Ok token) ) ->
-            ( Initializing budgetID (Just token), fetchBudgets token GotBudgets )
+        ( Initializing possibleBudgetID _, GotToken (Ok token) ) ->
+            ( Initializing possibleBudgetID (Just token), fetchBudgets token GotBudgets )
 
         ( Initializing possibleBudgetID possibleToken, GotBudgets (Ok budgets) ) ->
             let
@@ -49,11 +49,7 @@ update msg model =
                         ( PickingBudget budgets token, Cmd.none )
 
                     Just budget ->
-                        ( Dashboard
-                            { budgets = budgets
-                            , activeBudget = budget
-                            , token = token
-                            }
+                        ( Dashboard { budgets = budgets, activeBudget = budget, token = token }
                         , Cmd.none
                         )
 
@@ -65,11 +61,7 @@ update msg model =
             ( PickingBudget budgets token, Cmd.none )
 
         ( PickingBudget budgets token, SelectedBudget budget ) ->
-            ( Dashboard
-                { budgets = budgets
-                , activeBudget = budget
-                , token = token
-                }
+            ( Dashboard { budgets = budgets, activeBudget = budget, token = token }
             , Cmd.none
             )
 
@@ -83,11 +75,7 @@ update msg model =
         ( Dashboard { activeBudget, token }, GotBudgets (Ok budgets) ) ->
             case Dict.get activeBudget.id budgets of
                 Just budget ->
-                    ( Dashboard
-                        { budgets = budgets
-                        , activeBudget = budget
-                        , token = token
-                        }
+                    ( Dashboard { budgets = budgets, activeBudget = budget, token = token }
                     , Cmd.none
                     )
 
