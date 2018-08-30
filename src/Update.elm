@@ -41,7 +41,11 @@ update msg model =
 
         -- Have a token, now fetching the list of budgets
         ( FetchingBudgets possibleBudgetID token, GotBudgets (Ok budgets) ) ->
-            case possibleBudgetID |> Maybe.andThen (\id -> Dict.get id budgets) of
+            let
+                possibleBudget =
+                    possibleBudgetID |> Maybe.andThen (\id -> Dict.get id budgets)
+            in
+            case possibleBudget of
                 Nothing ->
                     PickingBudget budgets token
                         |> withNoCmd
