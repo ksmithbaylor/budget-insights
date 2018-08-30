@@ -25,24 +25,6 @@ decodeToken =
 
 
 
--- API TYPES AND DECODERS
-
-
-decodeBudgets : Decoder (Dict BudgetID Budget)
-decodeBudgets =
-    field "data"
-        (field "budgets"
-            (list decodeBudget
-                |> andThen
-                    (List.map (\budget -> ( budget.id, budget ))
-                        >> Dict.fromList
-                        >> succeed
-                    )
-            )
-        )
-
-
-
 -- YNAB API
 
 
@@ -63,3 +45,17 @@ fetchBudgets : String -> (Result Http.Error (Dict BudgetID Budget) -> msg) -> Cm
 fetchBudgets token msg =
     ynabRequest token "/budgets" decodeBudgets
         |> Http.send msg
+
+
+decodeBudgets : Decoder (Dict BudgetID Budget)
+decodeBudgets =
+    field "data"
+        (field "budgets"
+            (list decodeBudget
+                |> andThen
+                    (List.map (\budget -> ( budget.id, budget ))
+                        >> Dict.fromList
+                        >> succeed
+                    )
+            )
+        )
