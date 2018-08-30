@@ -35,12 +35,12 @@ type alias Token =
 type alias DashboardState =
     { budgets : Dict BudgetID Budget
     , activeBudget : Budget
-    , apiToken : Token
+    , token : Token
     }
 
 
 type alias PickingBudgetState =
-    { budgets : Dict BudgetID Budget, apiToken : Token }
+    { budgets : Dict BudgetID Budget, token : Token }
 
 
 type Model
@@ -73,8 +73,8 @@ update msg model =
     case msg of
         GoBack ->
             case model of
-                Initialized { budgets, apiToken } ->
-                    ( PickingBudget { budgets = budgets, apiToken = apiToken }, Cmd.none )
+                Initialized { budgets, token } ->
+                    ( PickingBudget { budgets = budgets, token = token }, Cmd.none )
 
                 other ->
                     ( other, Cmd.none )
@@ -85,10 +85,10 @@ update msg model =
                     ( Initializing budgetID (Just token), fetchBudgets token GotBudgets )
 
                 PickingBudget state ->
-                    ( PickingBudget { state | apiToken = token }, Cmd.none )
+                    ( PickingBudget { state | token = token }, Cmd.none )
 
                 Initialized state ->
-                    ( Initialized { state | apiToken = token }, Cmd.none )
+                    ( Initialized { state | token = token }, Cmd.none )
 
                 other ->
                     ( other, Cmd.none )
@@ -110,7 +110,7 @@ update msg model =
                             Nothing ->
                                 ( PickingBudget
                                     { budgets = budgets
-                                    , apiToken = token
+                                    , token = token
                                     }
                                 , Cmd.none
                                 )
@@ -119,21 +119,21 @@ update msg model =
                                 ( Initialized
                                     { budgets = budgets
                                     , activeBudget = budget
-                                    , apiToken = token
+                                    , token = token
                                     }
                                 , Cmd.none
                                 )
 
-                PickingBudget { apiToken } ->
-                    ( PickingBudget { budgets = budgets, apiToken = apiToken }, Cmd.none )
+                PickingBudget { token } ->
+                    ( PickingBudget { budgets = budgets, token = token }, Cmd.none )
 
-                Initialized { activeBudget, apiToken } ->
+                Initialized { activeBudget, token } ->
                     case Dict.get activeBudget.id budgets of
                         Just budget ->
                             ( Initialized
                                 { budgets = budgets
                                 , activeBudget = budget
-                                , apiToken = apiToken
+                                , token = token
                                 }
                             , Cmd.none
                             )
@@ -141,7 +141,7 @@ update msg model =
                         Nothing ->
                             ( PickingBudget
                                 { budgets = budgets
-                                , apiToken = apiToken
+                                , token = token
                                 }
                             , Cmd.none
                             )
@@ -154,11 +154,11 @@ update msg model =
 
         SelectedBudget budget ->
             case model of
-                PickingBudget { budgets, apiToken } ->
+                PickingBudget { budgets, token } ->
                     ( Initialized
                         { budgets = budgets
                         , activeBudget = budget
-                        , apiToken = apiToken
+                        , token = token
                         }
                     , Cmd.none
                     )
