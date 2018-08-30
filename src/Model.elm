@@ -1,5 +1,6 @@
-module Model exposing (DashboardState, Model(..), Token)
+module Model exposing (DashboardState, Model(..))
 
+import API exposing (Token)
 import Data.Budget exposing (Budget, BudgetID)
 import Dict exposing (Dict)
 import Http
@@ -17,7 +18,3 @@ type alias DashboardState =
     , activeBudget : Budget
     , token : Token
     }
-
-
-type alias Token =
-    String

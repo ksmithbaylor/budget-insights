@@ -1,4 +1,4 @@
-module API exposing (fetchBudgets, fetchToken)
+module API exposing (Token, fetchBudgets, fetchToken, usableToken)
 
 import Data.Budget exposing (..)
 import Data.Money
@@ -11,22 +11,38 @@ import Json.Decode.Extra exposing (fromResult)
 
 
 
--- TOKEN FETCH
+-- TOKEN
 
 
-fetchToken : (Result Http.Error String -> msg) -> Cmd msg
+type Token
+    = Token String
+
+
+usableToken : Maybe Token -> Token
+usableToken possibleToken =
+    case possibleToken of
+        Nothing ->
+            Token ""
+
+        Just token ->
+            token
+
+
+fetchToken : (Result Http.Error Token -> msg) -> Cmd msg
 fetchToken msg =
     Http.send msg <|
         Http.get "http://localhost:4000/token" <|
-            field "token" string
+            (field "token" string
+                |> andThen (Token >> succeed)
+            )
 
 
 
 -- YNAB API
 
 
-ynabRequest : String -> String -> Decoder a -> Http.Request a
-ynabRequest token path decoder =
+ynabRequest : Token -> String -> Decoder a -> Http.Request a
+ynabRequest (Token token) path decoder =
     Http.request
         { method = "GET"
         , headers = [ Http.header "Authorization" ("Bearer " ++ token) ]
@@ -38,7 +54,7 @@ ynabRequest token path decoder =
         }
 
 
-fetchBudgets : String -> (Result Http.Error (Dict BudgetID Budget) -> msg) -> Cmd msg
+fetchBudgets : Token -> (Result Http.Error (Dict BudgetID Budget) -> msg) -> Cmd msg
 fetchBudgets token msg =
     Http.send msg <|
         ynabRequest token "/budgets" <|

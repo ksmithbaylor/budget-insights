@@ -1,6 +1,6 @@
 module Update exposing (Msg(..), init, update)
 
-import API exposing (fetchBudgets, fetchToken)
+import API exposing (Token, fetchBudgets, fetchToken, usableToken)
 import Browser exposing (UrlRequest(..))
 import Browser.Navigation as Navigation
 import Cmd.Extra exposing (..)
@@ -16,7 +16,7 @@ import Url exposing (Url)
 
 
 type Msg
-    = GotToken (Result Http.Error String)
+    = GotToken (Result Http.Error Token)
     | GotBudgets (Result Http.Error (Dict BudgetID Budget))
     | SelectedBudget Budget
     | GoBack
@@ -42,7 +42,7 @@ update msg model =
         ( Initializing possibleBudgetID possibleToken, GotBudgets (Ok budgets) ) ->
             let
                 token =
-                    Maybe.withDefault "" possibleToken
+                    usableToken possibleToken
 
                 budgetID =
                     Maybe.withDefault "BOGUS" possibleBudgetID
