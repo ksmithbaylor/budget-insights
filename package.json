@@ -9,6 +9,8 @@
     "dotenv": "^6.0.0",
     "elm": "0.19.0-bugfix2",
     "elm-test": "^0.19.0-beta4",
-    "express": "^4.16.3"
+    "express": "^4.16.3",
+    "gzip-size-cli": "^3.0.0",
+    "uglify-js": "^3.4.8"
   }
 }
