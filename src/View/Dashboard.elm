@@ -1,12 +1,12 @@
 module View.Dashboard exposing (view)
 
+import Data.Budget exposing (Budget, BudgetID)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
 import Http
-import Model exposing (Model(..), DashboardState)
+import Model exposing (DashboardState, Model(..))
 import Update exposing (Msg(..))
-import Data.Budget exposing (Budget, BudgetID)
 
 
 view : DashboardState -> Html Msg

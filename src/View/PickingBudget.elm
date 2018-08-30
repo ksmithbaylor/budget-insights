@@ -1,13 +1,13 @@
 module View.PickingBudget exposing (view)
 
+import Data.Budget exposing (Budget, BudgetID)
+import Dict exposing (Dict)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
-import Dict exposing (Dict)
 import ISO8601
-import Model exposing (Model(..), DashboardState)
+import Model exposing (DashboardState, Model(..))
 import Update exposing (Msg(..))
-import Data.Budget exposing (Budget, BudgetID)
 
 
 view : Dict BudgetID Budget -> Html Msg

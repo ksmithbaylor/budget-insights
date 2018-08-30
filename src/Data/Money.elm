@@ -1,4 +1,4 @@
-module Data.Money exposing (Money, create, map, map2, add, subtract, percent, format)
+module Data.Money exposing (Money, add, create, format, map, map2, percent, subtract)
 
 import FormatNumber
 import FormatNumber.Locales exposing (usLocale)
@@ -35,7 +35,7 @@ subtract a b =
 
 percent : Float -> Money -> Money
 percent p (Money value) =
-    (toFloat value) * p / 100 |> round |> Money
+    toFloat value * p / 100 |> round |> Money
 
 
 format : Money -> String

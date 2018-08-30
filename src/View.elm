@@ -6,9 +6,9 @@ import Html.Attributes exposing (..)
 import Html.Events exposing (..)
 import Model exposing (Model(..))
 import Update exposing (Msg)
-import View.PickingBudget
 import View.Dashboard
 import View.Error
+import View.PickingBudget
 
 
 view : Model -> Browser.Document Msg
@@ -22,12 +22,12 @@ view model =
                 _ ->
                     "Budget Insights"
     in
-        { title = title
-        , body =
-            [ styleTag
-            , viewPage model
-            ]
-        }
+    { title = title
+    , body =
+        [ styleTag
+        , viewPage model
+        ]
+    }
 
 
 viewPage : Model -> Html Msg

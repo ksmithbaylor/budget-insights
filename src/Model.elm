@@ -1,8 +1,8 @@
-module Model exposing (..)
+module Model exposing (DashboardState, Model(..), Token)
 
-import Http
-import Dict exposing (Dict)
 import Data.Budget exposing (Budget, BudgetID)
+import Dict exposing (Dict)
+import Http
 
 
 type Model

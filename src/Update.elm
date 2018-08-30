@@ -1,14 +1,15 @@
 module Update exposing (Msg(..), init, update)
 
+import API exposing (fetchBudgets, fetchToken)
 import Browser exposing (UrlRequest(..))
 import Browser.Navigation as Navigation
-import Url exposing (Url)
-import Http
-import Dict exposing (Dict)
 import Cmd.Extra exposing (..)
-import Model exposing (Model(..))
-import API exposing (fetchToken, fetchBudgets)
 import Data.Budget exposing (Budget, BudgetID)
+import Dict exposing (Dict)
+import Http
+import Model exposing (Model(..))
+import Url exposing (Url)
+
 
 
 -- UPDATE
@@ -46,14 +47,14 @@ update msg model =
                 budgetID =
                     Maybe.withDefault "BOGUS" possibleBudgetID
             in
-                case Dict.get budgetID budgets of
-                    Nothing ->
-                        PickingBudget budgets token
-                            |> withNoCmd
+            case Dict.get budgetID budgets of
+                Nothing ->
+                    PickingBudget budgets token
+                        |> withNoCmd
 
-                    Just budget ->
-                        Dashboard { budgets = budgets, activeBudget = budget, token = token }
-                            |> withNoCmd
+                Just budget ->
+                    Dashboard { budgets = budgets, activeBudget = budget, token = token }
+                        |> withNoCmd
 
         -- Budget picking screen
         ( PickingBudget budgets _, GotToken (Ok token) ) ->

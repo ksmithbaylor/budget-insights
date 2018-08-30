@@ -1,9 +1,9 @@
 module Data.Budget exposing (Budget, BudgetID, decodeBudget)
 
-import Json.Decode as Decode exposing (..)
-import Json.Decode.Extra exposing (fromResult)
 import Date exposing (Date)
 import ISO8601 exposing (Time)
+import Json.Decode as Decode exposing (..)
+import Json.Decode.Extra exposing (fromResult)
 
 
 type alias BudgetID =

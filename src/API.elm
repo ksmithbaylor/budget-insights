@@ -1,13 +1,14 @@
-module API exposing (fetchToken, fetchBudgets)
+module API exposing (fetchBudgets, fetchToken)
 
+import Data.Budget exposing (..)
+import Data.Money
+import Date exposing (Date)
+import Dict exposing (Dict)
 import Http
+import ISO8601 exposing (Time)
 import Json.Decode as Decode exposing (..)
 import Json.Decode.Extra exposing (fromResult)
-import Dict exposing (Dict)
-import Date exposing (Date)
-import ISO8601 exposing (Time)
-import Data.Money
-import Data.Budget exposing (..)
+
 
 
 -- TOKEN FETCH
