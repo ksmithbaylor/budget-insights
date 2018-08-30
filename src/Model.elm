@@ -16,6 +16,6 @@ type Model
 
 type alias DashboardState =
     { budgets : Dict BudgetID Budget
-    , activeBudget : Budget
+    , budget : Budget
     , token : Token
     }

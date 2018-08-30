@@ -12,7 +12,7 @@ import Update exposing (Msg(..))
 view : DashboardState -> Html Msg
 view state =
     div [ class "dashboard" ]
-        [ viewTopBar state.activeBudget
+        [ viewTopBar state.budget
         , viewMain state
         ]
 

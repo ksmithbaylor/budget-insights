@@ -16,8 +16,8 @@ view model =
     let
         title =
             case model of
-                Dashboard { activeBudget } ->
-                    "Budget Insights | " ++ activeBudget.name
+                Dashboard { budget } ->
+                    "Budget Insights | " ++ budget.name
 
                 _ ->
                     "Budget Insights"

@@ -51,7 +51,7 @@ update msg model =
                         |> withNoCmd
 
                 Just budget ->
-                    Dashboard { budgets = budgets, activeBudget = budget, token = token }
+                    Dashboard { budgets = budgets, budget = budget, token = token }
                         |> withNoCmd
 
         -- Budget picking screen
@@ -64,7 +64,7 @@ update msg model =
                 |> withNoCmd
 
         ( PickingBudget budgets token, SelectedBudget budget ) ->
-            Dashboard { budgets = budgets, activeBudget = budget, token = token }
+            Dashboard { budgets = budgets, budget = budget, token = token }
                 |> withNoCmd
 
         -- On the dashboard
@@ -76,14 +76,14 @@ update msg model =
             Dashboard { state | token = token }
                 |> withNoCmd
 
-        ( Dashboard { activeBudget, token }, GotBudgets (Ok budgets) ) ->
-            case Dict.get activeBudget.id budgets of
+        ( Dashboard state, GotBudgets (Ok budgets) ) ->
+            case Dict.get state.budget.id budgets of
                 Just budget ->
-                    Dashboard { budgets = budgets, activeBudget = budget, token = token }
+                    Dashboard { budgets = budgets, budget = budget, token = state.token }
                         |> withNoCmd
 
                 Nothing ->
-                    PickingBudget budgets token
+                    PickingBudget budgets state.token
                         |> withNoCmd
 
         -- Error handling
