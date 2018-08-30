@@ -1,7 +1,7 @@
 module View.PickingBudget exposing (view)
 
 import Data.Budget exposing (Budget, BudgetID)
-import Dict exposing (Dict)
+import Dict.Any as AnyDict exposing (AnyDict)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
@@ -10,14 +10,13 @@ import Model exposing (DashboardState, Model(..))
 import Update exposing (Msg(..))
 
 
-view : Dict BudgetID Budget -> Html Msg
+view : AnyDict String BudgetID Budget -> Html Msg
 view budgets =
     div [ class "budget-list" ]
         [ h1 [] [ text "Available Budgets" ]
         , div [ class "flow" ]
             (budgets
-                |> Dict.toList
-                |> List.map Tuple.second
+                |> AnyDict.values
                 |> List.sortBy (.lastModified >> ISO8601.toString)
                 |> List.reverse
                 |> List.map viewBudget

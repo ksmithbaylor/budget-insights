@@ -1,9 +1,9 @@
 module API exposing (Token, fetchBudgets, fetchToken, usableToken)
 
-import Data.Budget exposing (..)
+import Data.Budget as Budget exposing (Budget, BudgetID, decodeBudget)
 import Data.Money
 import Date exposing (Date)
-import Dict exposing (Dict)
+import Dict.Any as AnyDict exposing (AnyDict)
 import Http
 import ISO8601 exposing (Time)
 import Json.Decode as Decode exposing (..)
@@ -54,7 +54,7 @@ ynabRequest (Token token) path decoder =
         }
 
 
-fetchBudgets : Token -> (Result Http.Error (Dict BudgetID Budget) -> msg) -> Cmd msg
+fetchBudgets : Token -> (Result Http.Error (AnyDict String BudgetID Budget) -> msg) -> Cmd msg
 fetchBudgets token msg =
     Http.send msg <|
         ynabRequest token "/budgets" <|
@@ -63,7 +63,7 @@ fetchBudgets token msg =
                     (list decodeBudget
                         |> andThen
                             (List.map (\budget -> ( budget.id, budget ))
-                                >> Dict.fromList
+                                >> AnyDict.fromList Budget.idToString
                                 >> succeed
                             )
                     )

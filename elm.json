@@ -16,7 +16,8 @@
             "elm/url": "1.0.0",
             "elm-community/json-extra": "4.0.0",
             "justinmimbs/date": "1.0.0",
-            "jweir/elm-iso8601": "4.0.3"
+            "jweir/elm-iso8601": "4.0.3",
+            "turboMaCk/any-dict": "1.0.1"
         },
         "indirect": {
             "elm/parser": "1.0.0",

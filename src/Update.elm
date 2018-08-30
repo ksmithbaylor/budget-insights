@@ -4,8 +4,8 @@ import API exposing (Token, fetchBudgets, fetchToken, usableToken)
 import Browser exposing (UrlRequest(..))
 import Browser.Navigation as Navigation
 import Cmd.Extra exposing (..)
-import Data.Budget exposing (Budget, BudgetID)
-import Dict exposing (Dict)
+import Data.Budget as Budget exposing (Budget, BudgetID)
+import Dict.Any as AnyDict exposing (AnyDict)
 import Http
 import Model exposing (Model(..))
 import Url exposing (Url)
@@ -17,7 +17,7 @@ import Url exposing (Url)
 
 type Msg
     = GotToken (Result Http.Error Token)
-    | GotBudgets (Result Http.Error (Dict BudgetID Budget))
+    | GotBudgets (Result Http.Error (AnyDict String BudgetID Budget))
     | SelectedBudget Budget
     | GoBack
     | ClickedLink UrlRequest
@@ -26,7 +26,7 @@ type Msg
 
 init : () -> Url -> Navigation.Key -> ( Model, Cmd Msg )
 init flags url key =
-    ( Initializing (Just "1b1f448f-8750-40a9-b744-f772f4898b91")
+    ( Initializing (Just Budget.defaultBudgetID)
     , fetchToken GotToken
     )
 
@@ -43,7 +43,7 @@ update msg model =
         ( FetchingBudgets possibleBudgetID token, GotBudgets (Ok budgets) ) ->
             let
                 possibleBudget =
-                    possibleBudgetID |> Maybe.andThen (\id -> Dict.get id budgets)
+                    possibleBudgetID |> Maybe.andThen (\id -> AnyDict.get id budgets)
             in
             case possibleBudget of
                 Nothing ->
@@ -77,7 +77,7 @@ update msg model =
                 |> withNoCmd
 
         ( Dashboard state, GotBudgets (Ok budgets) ) ->
-            case Dict.get state.budget.id budgets of
+            case AnyDict.get state.budget.id budgets of
                 Just budget ->
                     Dashboard { budgets = budgets, budget = budget, token = state.token }
                         |> withNoCmd
