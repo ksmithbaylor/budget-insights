@@ -39,13 +39,9 @@ type alias DashboardState =
     }
 
 
-type alias PickingBudgetState =
-    { budgets : Dict BudgetID Budget, token : Token }
-
-
 type Model
     = Initializing (Maybe BudgetID) (Maybe Token)
-    | PickingBudget PickingBudgetState
+    | PickingBudget (Dict BudgetID Budget) Token
     | Initialized DashboardState
     | SomethingWentWrong Http.Error
 
@@ -74,7 +70,7 @@ update msg model =
         GoBack ->
             case model of
                 Initialized { budgets, token } ->
-                    ( PickingBudget { budgets = budgets, token = token }, Cmd.none )
+                    ( PickingBudget budgets token, Cmd.none )
 
                 other ->
                     ( other, Cmd.none )
@@ -84,8 +80,8 @@ update msg model =
                 Initializing budgetID _ ->
                     ( Initializing budgetID (Just token), fetchBudgets token GotBudgets )
 
-                PickingBudget state ->
-                    ( PickingBudget { state | token = token }, Cmd.none )
+                PickingBudget budgets _ ->
+                    ( PickingBudget budgets token, Cmd.none )
 
                 Initialized state ->
                     ( Initialized { state | token = token }, Cmd.none )
@@ -108,12 +104,7 @@ update msg model =
                     in
                         case Dict.get budgetID budgets of
                             Nothing ->
-                                ( PickingBudget
-                                    { budgets = budgets
-                                    , token = token
-                                    }
-                                , Cmd.none
-                                )
+                                ( PickingBudget budgets token, Cmd.none )
 
                             Just budget ->
                                 ( Initialized
@@ -124,8 +115,8 @@ update msg model =
                                 , Cmd.none
                                 )
 
-                PickingBudget { token } ->
-                    ( PickingBudget { budgets = budgets, token = token }, Cmd.none )
+                PickingBudget _ token ->
+                    ( PickingBudget budgets token, Cmd.none )
 
                 Initialized { activeBudget, token } ->
                     case Dict.get activeBudget.id budgets of
@@ -139,12 +130,7 @@ update msg model =
                             )
 
                         Nothing ->
-                            ( PickingBudget
-                                { budgets = budgets
-                                , token = token
-                                }
-                            , Cmd.none
-                            )
+                            ( PickingBudget budgets token, Cmd.none )
 
                 other ->
                     ( other, Cmd.none )
@@ -154,7 +140,7 @@ update msg model =
 
         SelectedBudget budget ->
             case model of
-                PickingBudget { budgets, token } ->
+                PickingBudget budgets token ->
                     ( Initialized
                         { budgets = budgets
                         , activeBudget = budget
@@ -210,7 +196,7 @@ view model =
         Initializing _ _ ->
             div [] []
 
-        PickingBudget { budgets } ->
+        PickingBudget budgets _ ->
             viewBudgets budgets
 
         Initialized state ->
