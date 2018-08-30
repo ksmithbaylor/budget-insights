@@ -31,20 +31,12 @@ init flags url key =
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
-    case ( msg, model ) of
-        ( GoBack, Dashboard { budgets, token } ) ->
-            ( PickingBudget budgets token, Cmd.none )
-
-        ( GotToken (Ok token), Initializing budgetID _ ) ->
+    case ( model, msg ) of
+        -- While loading the page
+        ( Initializing budgetID _, GotToken (Ok token) ) ->
             ( Initializing budgetID (Just token), fetchBudgets token GotBudgets )
 
-        ( GotToken (Ok token), PickingBudget budgets _ ) ->
-            ( PickingBudget budgets token, Cmd.none )
-
-        ( GotToken (Ok token), Dashboard state ) ->
-            ( Dashboard { state | token = token }, Cmd.none )
-
-        ( GotBudgets (Ok budgets), Initializing possibleBudgetID possibleToken ) ->
+        ( Initializing possibleBudgetID possibleToken, GotBudgets (Ok budgets) ) ->
             let
                 token =
                     Maybe.withDefault "" possibleToken
@@ -65,10 +57,30 @@ update msg model =
                         , Cmd.none
                         )
 
-        ( GotBudgets (Ok budgets), PickingBudget _ token ) ->
+        -- Budget picking screen
+        ( PickingBudget budgets _, GotToken (Ok token) ) ->
             ( PickingBudget budgets token, Cmd.none )
 
-        ( GotBudgets (Ok budgets), Dashboard { activeBudget, token } ) ->
+        ( PickingBudget _ token, GotBudgets (Ok budgets) ) ->
+            ( PickingBudget budgets token, Cmd.none )
+
+        ( PickingBudget budgets token, SelectedBudget budget ) ->
+            ( Dashboard
+                { budgets = budgets
+                , activeBudget = budget
+                , token = token
+                }
+            , Cmd.none
+            )
+
+        -- On the dashboard
+        ( Dashboard { budgets, token }, GoBack ) ->
+            ( PickingBudget budgets token, Cmd.none )
+
+        ( Dashboard state, GotToken (Ok token) ) ->
+            ( Dashboard { state | token = token }, Cmd.none )
+
+        ( Dashboard { activeBudget, token }, GotBudgets (Ok budgets) ) ->
             case Dict.get activeBudget.id budgets of
                 Just budget ->
                     ( Dashboard
@@ -82,19 +94,11 @@ update msg model =
                 Nothing ->
                     ( PickingBudget budgets token, Cmd.none )
 
-        ( SelectedBudget budget, PickingBudget budgets token ) ->
-            ( Dashboard
-                { budgets = budgets
-                , activeBudget = budget
-                , token = token
-                }
-            , Cmd.none
-            )
-
-        ( GotBudgets (Err error), _ ) ->
+        -- Error handling and unexpected messages
+        ( _, GotBudgets (Err error) ) ->
             ( SomethingWentWrong error, Cmd.none )
 
-        ( GotToken (Err error), _ ) ->
+        ( _, GotToken (Err error) ) ->
             ( SomethingWentWrong error, Cmd.none )
 
         ( _, _ ) ->
