@@ -3,9 +3,9 @@ module API exposing (fetchToken, fetchBudgets)
 import Http
 import Json.Decode as Decode exposing (..)
 import Json.Decode.Extra exposing (fromResult)
-import ISO8601 exposing (Time)
-import Date exposing (Date)
 import Dict exposing (Dict)
+import Date exposing (Date)
+import ISO8601 exposing (Time)
 import Data.Money
 import Data.Budget exposing (..)
 

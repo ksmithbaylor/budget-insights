@@ -5,7 +5,8 @@ import Html.Attributes exposing (..)
 import Html.Events exposing (..)
 import Dict exposing (Dict)
 import ISO8601
-import Update exposing (Model(..), Msg(..), DashboardState)
+import Model exposing (Model(..), DashboardState)
+import Update exposing (Msg(..))
 import Data.Budget exposing (Budget, BudgetID)
 
 

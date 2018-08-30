@@ -1,42 +1,10 @@
-module Update exposing (Model(..), Msg(..), DashboardState, init, update)
+module Update exposing (Msg(..), init, update)
 
 import Http
 import Dict exposing (Dict)
-import Data.Budget exposing (Budget, BudgetID)
+import Model exposing (Model(..))
 import API exposing (fetchToken, fetchBudgets)
-
-
--- MODEL
-
-
-type Model
-    = Initializing (Maybe BudgetID) (Maybe Token)
-    | PickingBudget (Dict BudgetID Budget) Token
-    | Dashboard DashboardState
-    | SomethingWentWrong Http.Error
-
-
-type alias DashboardState =
-    { budgets : Dict BudgetID Budget
-    , activeBudget : Budget
-    , token : Token
-    }
-
-
-type alias Token =
-    String
-
-
-
--- INIT
-
-
-init : () -> ( Model, Cmd Msg )
-init flags =
-    ( Initializing (Just "1b1f448f-8750-40a9-b744-f772f4898b91") Nothing
-    , fetchToken GotToken
-    )
-
+import Data.Budget exposing (Budget, BudgetID)
 
 
 -- UPDATE
@@ -47,6 +15,13 @@ type Msg
     | GotBudgets (Result Http.Error (Dict BudgetID Budget))
     | SelectedBudget Budget
     | GoBack
+
+
+init : () -> ( Model, Cmd Msg )
+init flags =
+    ( Initializing (Just "1b1f448f-8750-40a9-b744-f772f4898b91") Nothing
+    , fetchToken GotToken
+    )
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )

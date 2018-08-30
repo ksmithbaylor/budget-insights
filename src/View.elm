@@ -4,7 +4,8 @@ import Browser
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
-import Update exposing (Model(..), Msg)
+import Model exposing (Model(..))
+import Update exposing (Msg)
 import View.PickingBudget
 import View.Dashboard
 import View.Error
