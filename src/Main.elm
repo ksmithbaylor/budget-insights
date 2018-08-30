@@ -42,7 +42,7 @@ type alias DashboardState =
 type Model
     = Initializing (Maybe BudgetID) (Maybe Token)
     | PickingBudget (Dict BudgetID Budget) Token
-    | Initialized DashboardState
+    | Dashboard DashboardState
     | SomethingWentWrong Http.Error
 
 
@@ -69,7 +69,7 @@ update msg model =
     case msg of
         GoBack ->
             case model of
-                Initialized { budgets, token } ->
+                Dashboard { budgets, token } ->
                     ( PickingBudget budgets token, Cmd.none )
 
                 other ->
@@ -83,8 +83,8 @@ update msg model =
                 PickingBudget budgets _ ->
                     ( PickingBudget budgets token, Cmd.none )
 
-                Initialized state ->
-                    ( Initialized { state | token = token }, Cmd.none )
+                Dashboard state ->
+                    ( Dashboard { state | token = token }, Cmd.none )
 
                 other ->
                     ( other, Cmd.none )
@@ -104,7 +104,7 @@ update msg model =
                                 ( PickingBudget budgets token, Cmd.none )
 
                             Just budget ->
-                                ( Initialized
+                                ( Dashboard
                                     { budgets = budgets
                                     , activeBudget = budget
                                     , token = token
@@ -115,10 +115,10 @@ update msg model =
                 PickingBudget _ token ->
                     ( PickingBudget budgets token, Cmd.none )
 
-                Initialized { activeBudget, token } ->
+                Dashboard { activeBudget, token } ->
                     case Dict.get activeBudget.id budgets of
                         Just budget ->
-                            ( Initialized
+                            ( Dashboard
                                 { budgets = budgets
                                 , activeBudget = budget
                                 , token = token
@@ -135,7 +135,7 @@ update msg model =
         SelectedBudget budget ->
             case model of
                 PickingBudget budgets token ->
-                    ( Initialized
+                    ( Dashboard
                         { budgets = budgets
                         , activeBudget = budget
                         , token = token
@@ -171,7 +171,7 @@ viewDocument model =
     let
         title =
             case model of
-                Initialized { activeBudget } ->
+                Dashboard { activeBudget } ->
                     "Budget Insights | " ++ activeBudget.name
 
                 _ ->
@@ -199,7 +199,7 @@ view model =
         PickingBudget budgets _ ->
             viewBudgets budgets
 
-        Initialized state ->
+        Dashboard state ->
             viewDashboard state
 
         SomethingWentWrong error ->
