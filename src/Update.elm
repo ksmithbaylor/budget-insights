@@ -4,8 +4,8 @@ import API exposing (Token, fetchBudgets, fetchToken, usableToken)
 import Browser exposing (UrlRequest(..))
 import Browser.Navigation as Navigation
 import Cmd.Extra exposing (..)
-import Data.Budget as Budget exposing (Budget, BudgetID)
-import Dict.Any as AnyDict exposing (AnyDict)
+import Data.Budget as Budget exposing (Budget, BudgetID, Budgets)
+import Dict.Any as AnyDict
 import Http
 import Model exposing (Model(..))
 import Url exposing (Url)
@@ -17,7 +17,7 @@ import Url exposing (Url)
 
 type Msg
     = GotToken (Result Http.Error Token)
-    | GotBudgets (Result Http.Error (AnyDict String BudgetID Budget))
+    | GotBudgets (Result Http.Error Budgets)
     | SelectedBudget Budget
     | GoBack
     | ClickedLink UrlRequest

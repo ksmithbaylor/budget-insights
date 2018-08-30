@@ -1,7 +1,7 @@
 module View.PickingBudget exposing (view)
 
-import Data.Budget exposing (Budget, BudgetID)
-import Dict.Any as AnyDict exposing (AnyDict)
+import Data.Budget exposing (Budget, BudgetID, Budgets)
+import Dict.Any as AnyDict
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
@@ -10,7 +10,7 @@ import Model exposing (DashboardState, Model(..))
 import Update exposing (Msg(..))
 
 
-view : AnyDict String BudgetID Budget -> Html Msg
+view : Budgets -> Html Msg
 view budgets =
     div [ class "budget-list" ]
         [ h1 [] [ text "Available Budgets" ]

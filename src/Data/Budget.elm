@@ -1,13 +1,10 @@
-module Data.Budget exposing (Budget, BudgetID, decodeBudget, defaultBudgetID, idToString)
+module Data.Budget exposing (Budget, BudgetID, Budgets, decodeBudget, defaultBudgetID, idToString)
 
 import Date exposing (Date)
+import Dict.Any as AnyDict exposing (AnyDict)
 import ISO8601 exposing (Time)
 import Json.Decode as Decode exposing (..)
 import Json.Decode.Extra exposing (fromResult)
-
-
-type BudgetID
-    = BudgetID String
 
 
 type alias Budget =
@@ -17,6 +14,14 @@ type alias Budget =
     , firstMonth : Date
     , lastMonth : Date
     }
+
+
+type BudgetID
+    = BudgetID String
+
+
+type alias Budgets =
+    AnyDict String BudgetID Budget
 
 
 defaultBudgetID : BudgetID
