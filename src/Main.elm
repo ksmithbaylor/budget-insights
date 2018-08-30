@@ -89,9 +89,6 @@ update msg model =
                 other ->
                     ( other, Cmd.none )
 
-        GotToken (Err error) ->
-            ( SomethingWentWrong error, Cmd.none )
-
         GotBudgets (Ok budgets) ->
             case model of
                 Initializing possibleBudgetID possibleToken ->
@@ -135,9 +132,6 @@ update msg model =
                 other ->
                     ( other, Cmd.none )
 
-        GotBudgets (Err error) ->
-            ( SomethingWentWrong error, Cmd.none )
-
         SelectedBudget budget ->
             case model of
                 PickingBudget budgets token ->
@@ -151,6 +145,12 @@ update msg model =
 
                 other ->
                     ( other, Cmd.none )
+
+        GotBudgets (Err error) ->
+            ( SomethingWentWrong error, Cmd.none )
+
+        GotToken (Err error) ->
+            ( SomethingWentWrong error, Cmd.none )
 
 
 
