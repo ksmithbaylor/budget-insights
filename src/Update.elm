@@ -5,6 +5,7 @@ import Browser.Navigation as Navigation
 import Url exposing (Url)
 import Http
 import Dict exposing (Dict)
+import Cmd.Extra exposing (..)
 import Model exposing (Model(..))
 import API exposing (fetchToken, fetchBudgets)
 import Data.Budget exposing (Budget, BudgetID)
@@ -34,7 +35,8 @@ update msg model =
     case ( model, msg ) of
         -- While loading the page
         ( Initializing possibleBudgetID _, GotToken (Ok token) ) ->
-            ( Initializing possibleBudgetID (Just token), fetchBudgets token GotBudgets )
+            Initializing possibleBudgetID (Just token)
+                |> withCmd (fetchBudgets token GotBudgets)
 
         ( Initializing possibleBudgetID possibleToken, GotBudgets (Ok budgets) ) ->
             let
@@ -46,48 +48,53 @@ update msg model =
             in
                 case Dict.get budgetID budgets of
                     Nothing ->
-                        ( PickingBudget budgets token, Cmd.none )
+                        PickingBudget budgets token
+                            |> withNoCmd
 
                     Just budget ->
-                        ( Dashboard { budgets = budgets, activeBudget = budget, token = token }
-                        , Cmd.none
-                        )
+                        Dashboard { budgets = budgets, activeBudget = budget, token = token }
+                            |> withNoCmd
 
         -- Budget picking screen
         ( PickingBudget budgets _, GotToken (Ok token) ) ->
-            ( PickingBudget budgets token, Cmd.none )
+            PickingBudget budgets token
+                |> withNoCmd
 
         ( PickingBudget _ token, GotBudgets (Ok budgets) ) ->
-            ( PickingBudget budgets token, Cmd.none )
+            PickingBudget budgets token
+                |> withNoCmd
 
         ( PickingBudget budgets token, SelectedBudget budget ) ->
-            ( Dashboard { budgets = budgets, activeBudget = budget, token = token }
-            , Cmd.none
-            )
+            Dashboard { budgets = budgets, activeBudget = budget, token = token }
+                |> withNoCmd
 
         -- On the dashboard
         ( Dashboard { budgets, token }, GoBack ) ->
-            ( PickingBudget budgets token, Cmd.none )
+            PickingBudget budgets token
+                |> withNoCmd
 
         ( Dashboard state, GotToken (Ok token) ) ->
-            ( Dashboard { state | token = token }, Cmd.none )
+            Dashboard { state | token = token }
+                |> withNoCmd
 
         ( Dashboard { activeBudget, token }, GotBudgets (Ok budgets) ) ->
             case Dict.get activeBudget.id budgets of
                 Just budget ->
-                    ( Dashboard { budgets = budgets, activeBudget = budget, token = token }
-                    , Cmd.none
-                    )
+                    Dashboard { budgets = budgets, activeBudget = budget, token = token }
+                        |> withNoCmd
 
                 Nothing ->
-                    ( PickingBudget budgets token, Cmd.none )
+                    PickingBudget budgets token
+                        |> withNoCmd
 
         -- Error handling and unexpected messages
         ( _, GotBudgets (Err error) ) ->
-            ( SomethingWentWrong error, Cmd.none )
+            SomethingWentWrong error
+                |> withNoCmd
 
         ( _, GotToken (Err error) ) ->
-            ( SomethingWentWrong error, Cmd.none )
+            SomethingWentWrong error
+                |> withNoCmd
 
         ( _, _ ) ->
-            ( model, Cmd.none )
+            model |> withNoCmd
