@@ -34,7 +34,7 @@ ynabRequest token path decoder =
     Http.request
         { method = "GET"
         , headers = [ Http.header "Authorization" ("Bearer " ++ token) ]
-        , url = "https://api.youneedabudget.com/v1" ++ path
+        , url = "http://localhost:4000/ynab" ++ path
         , body = Http.emptyBody
         , expect = Http.expectJson decoder
         , timeout = Nothing
