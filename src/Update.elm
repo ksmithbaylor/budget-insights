@@ -1,5 +1,8 @@
 module Update exposing (Msg(..), init, update)
 
+import Browser exposing (UrlRequest(..))
+import Browser.Navigation as Navigation
+import Url exposing (Url)
 import Http
 import Dict exposing (Dict)
 import Model exposing (Model(..))
@@ -15,10 +18,12 @@ type Msg
     | GotBudgets (Result Http.Error (Dict BudgetID Budget))
     | SelectedBudget Budget
     | GoBack
+    | ClickedLink UrlRequest
+    | UrlChanged Url
 
 
-init : () -> ( Model, Cmd Msg )
-init flags =
+init : () -> Url -> Navigation.Key -> ( Model, Cmd Msg )
+init flags url key =
     ( Initializing (Just "1b1f448f-8750-40a9-b744-f772f4898b91") Nothing
     , fetchToken GotToken
     )
@@ -111,3 +116,9 @@ update msg model =
 
         GotToken (Err error) ->
             ( SomethingWentWrong error, Cmd.none )
+
+        ClickedLink request ->
+            ( model, Cmd.none )
+
+        UrlChanged url ->
+            ( model, Cmd.none )
