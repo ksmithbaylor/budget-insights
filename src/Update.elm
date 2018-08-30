@@ -43,11 +43,8 @@ update msg model =
             let
                 token =
                     usableToken possibleToken
-
-                budgetID =
-                    Maybe.withDefault "BOGUS" possibleBudgetID
             in
-            case Dict.get budgetID budgets of
+            case possibleBudgetID |> Maybe.andThen (\id -> Dict.get id budgets) of
                 Nothing ->
                     PickingBudget budgets token
                         |> withNoCmd
