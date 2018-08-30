@@ -31,75 +31,46 @@ init flags url key =
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
-    case msg of
-        GoBack ->
-            case model of
-                Dashboard { budgets, token } ->
-                    ( PickingBudget budgets token, Cmd.none )
+    case ( msg, model ) of
+        ( GoBack, Dashboard { budgets, token } ) ->
+            ( PickingBudget budgets token, Cmd.none )
 
-                other ->
-                    ( other, Cmd.none )
+        ( GotToken (Ok token), Initializing budgetID _ ) ->
+            ( Initializing budgetID (Just token), fetchBudgets token GotBudgets )
 
-        GotToken (Ok token) ->
-            case model of
-                Initializing budgetID _ ->
-                    ( Initializing budgetID (Just token), fetchBudgets token GotBudgets )
+        ( GotToken (Ok token), PickingBudget budgets _ ) ->
+            ( PickingBudget budgets token, Cmd.none )
 
-                PickingBudget budgets _ ->
-                    ( PickingBudget budgets token, Cmd.none )
+        ( GotToken (Ok token), Dashboard state ) ->
+            ( Dashboard { state | token = token }, Cmd.none )
 
-                Dashboard state ->
-                    ( Dashboard { state | token = token }, Cmd.none )
+        ( GotBudgets (Ok budgets), Initializing possibleBudgetID possibleToken ) ->
+            let
+                token =
+                    Maybe.withDefault "" possibleToken
 
-                other ->
-                    ( other, Cmd.none )
+                budgetID =
+                    Maybe.withDefault "BOGUS" possibleBudgetID
+            in
+                case Dict.get budgetID budgets of
+                    Nothing ->
+                        ( PickingBudget budgets token, Cmd.none )
 
-        GotBudgets (Ok budgets) ->
-            case model of
-                Initializing possibleBudgetID possibleToken ->
-                    let
-                        token =
-                            Maybe.withDefault "" possibleToken
+                    Just budget ->
+                        ( Dashboard
+                            { budgets = budgets
+                            , activeBudget = budget
+                            , token = token
+                            }
+                        , Cmd.none
+                        )
 
-                        budgetID =
-                            Maybe.withDefault "BOGUS" possibleBudgetID
-                    in
-                        case Dict.get budgetID budgets of
-                            Nothing ->
-                                ( PickingBudget budgets token, Cmd.none )
+        ( GotBudgets (Ok budgets), PickingBudget _ token ) ->
+            ( PickingBudget budgets token, Cmd.none )
 
-                            Just budget ->
-                                ( Dashboard
-                                    { budgets = budgets
-                                    , activeBudget = budget
-                                    , token = token
-                                    }
-                                , Cmd.none
-                                )
-
-                PickingBudget _ token ->
-                    ( PickingBudget budgets token, Cmd.none )
-
-                Dashboard { activeBudget, token } ->
-                    case Dict.get activeBudget.id budgets of
-                        Just budget ->
-                            ( Dashboard
-                                { budgets = budgets
-                                , activeBudget = budget
-                                , token = token
-                                }
-                            , Cmd.none
-                            )
-
-                        Nothing ->
-                            ( PickingBudget budgets token, Cmd.none )
-
-                other ->
-                    ( other, Cmd.none )
-
-        SelectedBudget budget ->
-            case model of
-                PickingBudget budgets token ->
+        ( GotBudgets (Ok budgets), Dashboard { activeBudget, token } ) ->
+            case Dict.get activeBudget.id budgets of
+                Just budget ->
                     ( Dashboard
                         { budgets = budgets
                         , activeBudget = budget
@@ -108,17 +79,23 @@ update msg model =
                     , Cmd.none
                     )
 
-                other ->
-                    ( other, Cmd.none )
+                Nothing ->
+                    ( PickingBudget budgets token, Cmd.none )
 
-        GotBudgets (Err error) ->
+        ( SelectedBudget budget, PickingBudget budgets token ) ->
+            ( Dashboard
+                { budgets = budgets
+                , activeBudget = budget
+                , token = token
+                }
+            , Cmd.none
+            )
+
+        ( GotBudgets (Err error), _ ) ->
             ( SomethingWentWrong error, Cmd.none )
 
-        GotToken (Err error) ->
+        ( GotToken (Err error), _ ) ->
             ( SomethingWentWrong error, Cmd.none )
 
-        ClickedLink request ->
-            ( model, Cmd.none )
-
-        UrlChanged url ->
+        ( _, _ ) ->
             ( model, Cmd.none )
