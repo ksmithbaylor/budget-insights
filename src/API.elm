@@ -16,13 +16,9 @@ import Json.Decode.Extra exposing (fromResult)
 
 fetchToken : (Result Http.Error String -> msg) -> Cmd msg
 fetchToken msg =
-    Http.get "http://localhost:4000/token" decodeToken
-        |> Http.send msg
-
-
-decodeToken : Decoder String
-decodeToken =
-    Decode.field "token" Decode.string
+    Http.send msg <|
+        Http.get "http://localhost:4000/token" <|
+            field "token" string
 
 
 
@@ -44,19 +40,15 @@ ynabRequest token path decoder =
 
 fetchBudgets : String -> (Result Http.Error (Dict BudgetID Budget) -> msg) -> Cmd msg
 fetchBudgets token msg =
-    ynabRequest token "/budgets" decodeBudgets
-        |> Http.send msg
-
-
-decodeBudgets : Decoder (Dict BudgetID Budget)
-decodeBudgets =
-    field "data"
-        (field "budgets"
-            (list decodeBudget
-                |> andThen
-                    (List.map (\budget -> ( budget.id, budget ))
-                        >> Dict.fromList
-                        >> succeed
+    Http.send msg <|
+        ynabRequest token "/budgets" <|
+            field "data"
+                (field "budgets"
+                    (list decodeBudget
+                        |> andThen
+                            (List.map (\budget -> ( budget.id, budget ))
+                                >> Dict.fromList
+                                >> succeed
+                            )
                     )
-            )
-        )
+                )
