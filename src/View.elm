@@ -36,7 +36,7 @@ viewPage model =
         Initializing _ ->
             div [] []
 
-        FetchingBudgets _ _ ->
+        FetchingBudgetSummaries _ _ ->
             div [] []
 
         PickingBudget budgets _ ->

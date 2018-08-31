@@ -1,6 +1,6 @@
-module API exposing (Token, fetchBudgets, fetchToken, usableToken)
+module API exposing (Token, fetchBudgetSummaries, fetchToken, usableToken)
 
-import Data.Budget as Budget exposing (Budget, Budgets, decodeBudget)
+import Data.Budget as Budget exposing (BudgetSummaries, BudgetSummary, decodeBudgetSummary)
 import Data.Money
 import Date exposing (Date)
 import Dict.Any as AnyDict
@@ -54,13 +54,13 @@ ynabRequest (Token token) path decoder =
         }
 
 
-fetchBudgets : Token -> (Result Http.Error Budgets -> msg) -> Cmd msg
-fetchBudgets token msg =
+fetchBudgetSummaries : Token -> (Result Http.Error BudgetSummaries -> msg) -> Cmd msg
+fetchBudgetSummaries token msg =
     Http.send msg <|
         ynabRequest token "/budgets" <|
             field "data"
                 (field "budgets"
-                    (list decodeBudget
+                    (list decodeBudgetSummary
                         |> andThen
                             (List.map (\budget -> ( budget.id, budget ))
                                 >> AnyDict.fromList Budget.idToString

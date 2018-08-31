@@ -1,4 +1,4 @@
-module Data.Budget exposing (Budget, Budgets, ID, decodeBudget, defaultBudgetID, idToString)
+module Data.Budget exposing (BudgetSummaries, BudgetSummary, ID, decodeBudgetSummary, defaultBudgetID, idToString)
 
 import Date exposing (Date)
 import Dict.Any as AnyDict exposing (AnyDict)
@@ -7,7 +7,7 @@ import Json.Decode as Decode exposing (..)
 import Json.Decode.Extra exposing (fromResult)
 
 
-type alias Budget =
+type alias BudgetSummary =
     { id : ID
     , name : String
     , lastModified : Time
@@ -20,8 +20,8 @@ type ID
     = ID String
 
 
-type alias Budgets =
-    AnyDict String ID Budget
+type alias BudgetSummaries =
+    AnyDict String ID BudgetSummary
 
 
 defaultBudgetID : ID
@@ -34,9 +34,9 @@ idToString (ID id) =
     id
 
 
-decodeBudget : Decoder Budget
-decodeBudget =
-    map5 Budget
+decodeBudgetSummary : Decoder BudgetSummary
+decodeBudgetSummary =
+    map5 BudgetSummary
         (field "id" string |> andThen (ID >> succeed))
         (field "name" string)
         (field "last_modified_on" (string |> andThen (fromResult << ISO8601.fromString)))

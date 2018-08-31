@@ -1,6 +1,6 @@
 module View.Dashboard exposing (view)
 
-import Data.Budget as Budget exposing (Budget)
+import Data.Budget as Budget exposing (BudgetSummary)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
@@ -17,7 +17,7 @@ view state =
         ]
 
 
-viewTopBar : Budget -> Html Msg
+viewTopBar : BudgetSummary -> Html Msg
 viewTopBar budget =
     div [ class "top-bar" ]
         [ button [ class "back shadow-box", onClick GoBack ] [ text "⬅" ]

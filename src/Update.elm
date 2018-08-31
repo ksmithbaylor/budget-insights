@@ -1,10 +1,10 @@
 module Update exposing (Msg(..), init, update)
 
-import API exposing (Token, fetchBudgets, fetchToken, usableToken)
+import API exposing (Token, fetchBudgetSummaries, fetchToken, usableToken)
 import Browser exposing (UrlRequest(..))
 import Browser.Navigation as Navigation
 import Cmd.Extra exposing (..)
-import Data.Budget as Budget exposing (Budget, Budgets)
+import Data.Budget as Budget exposing (BudgetSummaries, BudgetSummary)
 import Dict.Any as AnyDict
 import Http
 import Model exposing (Model(..))
@@ -17,8 +17,8 @@ import Url exposing (Url)
 
 type Msg
     = GotToken (Result Http.Error Token)
-    | GotBudgets (Result Http.Error Budgets)
-    | SelectedBudget Budget
+    | GotBudgetSummaries (Result Http.Error BudgetSummaries)
+    | SelectedBudget BudgetSummary
     | GoBack
     | ClickedLink UrlRequest
     | UrlChanged Url
@@ -36,11 +36,11 @@ update msg model =
     case ( model, msg ) of
         -- Initial page load
         ( Initializing possibleBudgetID, GotToken (Ok token) ) ->
-            FetchingBudgets possibleBudgetID token
-                |> withCmd (fetchBudgets token GotBudgets)
+            FetchingBudgetSummaries possibleBudgetID token
+                |> withCmd (fetchBudgetSummaries token GotBudgetSummaries)
 
         -- Have a token, now fetching the list of budgets
-        ( FetchingBudgets possibleBudgetID token, GotBudgets (Ok budgets) ) ->
+        ( FetchingBudgetSummaries possibleBudgetID token, GotBudgetSummaries (Ok budgets) ) ->
             let
                 possibleBudget =
                     possibleBudgetID |> Maybe.andThen (\id -> AnyDict.get id budgets)
@@ -59,7 +59,7 @@ update msg model =
             PickingBudget budgets token
                 |> withNoCmd
 
-        ( PickingBudget _ token, GotBudgets (Ok budgets) ) ->
+        ( PickingBudget _ token, GotBudgetSummaries (Ok budgets) ) ->
             PickingBudget budgets token
                 |> withNoCmd
 
@@ -76,7 +76,7 @@ update msg model =
             Dashboard { state | token = token }
                 |> withNoCmd
 
-        ( Dashboard state, GotBudgets (Ok budgets) ) ->
+        ( Dashboard state, GotBudgetSummaries (Ok budgets) ) ->
             case AnyDict.get state.budget.id budgets of
                 Just budget ->
                     Dashboard { budgets = budgets, budget = budget, token = state.token }
@@ -87,7 +87,7 @@ update msg model =
                         |> withNoCmd
 
         -- Error handling
-        ( _, GotBudgets (Err error) ) ->
+        ( _, GotBudgetSummaries (Err error) ) ->
             SomethingWentWrong error
                 |> withNoCmd
 

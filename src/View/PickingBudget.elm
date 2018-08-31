@@ -1,6 +1,6 @@
 module View.PickingBudget exposing (view)
 
-import Data.Budget as Budget exposing (Budget, Budgets)
+import Data.Budget as Budget exposing (BudgetSummaries, BudgetSummary)
 import Dict.Any as AnyDict
 import Html exposing (..)
 import Html.Attributes exposing (..)
@@ -10,7 +10,7 @@ import Model exposing (DashboardState, Model(..))
 import Update exposing (Msg(..))
 
 
-view : Budgets -> Html Msg
+view : BudgetSummaries -> Html Msg
 view budgets =
     div [ class "budget-list" ]
         [ h1 [] [ text "Available Budgets" ]
@@ -24,7 +24,7 @@ view budgets =
         ]
 
 
-viewBudget : Budget -> Html Msg
+viewBudget : BudgetSummary -> Html Msg
 viewBudget budget =
     div [ class "budget shadow-box", onClick (SelectedBudget budget) ]
         [ div [ class "budget-name" ] [ text budget.name ]
