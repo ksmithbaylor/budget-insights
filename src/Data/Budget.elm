@@ -1,4 +1,4 @@
-module Data.Budget exposing (BudgetSummaries, BudgetSummary, ID, decodeBudgetSummaries, decodeBudgetSummary, defaultBudgetID, idToString)
+module Data.Budget exposing (Budget, BudgetSummaries, BudgetSummary, ID, decodeBudget, decodeBudgetSummaries, decodeBudgetSummary, defaultBudgetID, idToString)
 
 import Date exposing (Date)
 import Dict.Any as AnyDict exposing (AnyDict)
@@ -62,6 +62,35 @@ decodeBudgetSummaries : Decoder BudgetSummaries
 decodeBudgetSummaries =
     succeed (dictKeyedBy .id idToString)
         |> requiredAt [ "data", "budgets" ] (list decodeBudgetSummary)
+
+
+
+-- Budget
+
+
+type alias Budget =
+    { id : ID
+    , name : String
+    , lastModified : Time
+
+    -- , accounts : Accounts
+    -- , payees : Payees
+    -- , masterCategories : MasterCategories
+    -- , categories : Categories
+    -- , months : Months
+    -- , transactions : Transactions
+    -- , subTransactions : SubTransactions
+    -- , scheduledTransactions : ScheduledTransactions
+    -- , scheduledSubTransactions : ScheduledSubTransactions
+    }
+
+
+decodeBudget : Decoder Budget
+decodeBudget =
+    succeed Budget
+        |> required "id" decodeID
+        |> required "name" string
+        |> required "last_modified_on" time
 
 
 
