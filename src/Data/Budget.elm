@@ -1,10 +1,11 @@
-module Data.Budget exposing (Budget, BudgetSummaries, BudgetSummary, ID, decodeBudget, decodeBudgetSummaries, decodeBudgetSummary, defaultBudgetID, idToString)
+module Data.Budget exposing (Budget, BudgetSummaries, BudgetSummary, ID, decodeBudgetResponse, decodeBudgetSummaries, decodeBudgetSummary, defaultBudgetID, idToString)
 
+import Data.Account as Account exposing (Accounts, decodeAccounts)
 import Date exposing (Date)
-import Dict.Any as AnyDict exposing (AnyDict)
+import Dict.Any exposing (AnyDict)
+import Helpers.Decode exposing (..)
 import ISO8601 exposing (Time)
 import Json.Decode as Decode exposing (..)
-import Json.Decode.Extra exposing (fromResult)
 import Json.Decode.Pipeline exposing (..)
 
 
@@ -60,7 +61,7 @@ type alias BudgetSummaries =
 
 decodeBudgetSummaries : Decoder BudgetSummaries
 decodeBudgetSummaries =
-    succeed (dictKeyedBy .id idToString)
+    succeed (dictByID idToString)
         |> requiredAt [ "data", "budgets" ] (list decodeBudgetSummary)
 
 
@@ -72,8 +73,8 @@ type alias Budget =
     { id : ID
     , name : String
     , lastModified : Time
+    , accounts : Accounts
 
-    -- , accounts : Accounts
     -- , payees : Payees
     -- , masterCategories : MasterCategories
     -- , categories : Categories
@@ -91,23 +92,10 @@ decodeBudget =
         |> required "id" decodeID
         |> required "name" string
         |> required "last_modified_on" time
+        |> required "accounts" decodeAccounts
 
 
-
--- Helpers
-
-
-date : Decoder Date
-date =
-    string |> andThen (Date.fromIsoString >> fromResult)
-
-
-time : Decoder Time
-time =
-    string |> andThen (ISO8601.fromString >> fromResult)
-
-
-dictKeyedBy : (a -> b) -> (b -> comparable) -> List a -> AnyDict comparable b a
-dictKeyedBy key comparableKey =
-    List.map (\value -> ( key value, value ))
-        >> AnyDict.fromList comparableKey
+decodeBudgetResponse : Decoder Budget
+decodeBudgetResponse =
+    succeed identity
+        |> requiredAt [ "data", "budget" ] decodeBudget

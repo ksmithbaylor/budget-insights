@@ -1,11 +1,22 @@
-module Data.Money exposing (Money, add, create, format, map, map2, percent, subtract)
+module Data.Money exposing (Money, add, create, decodeMoney, format, fromYNAB, map, map2, percent, subtract)
 
 import FormatNumber
 import FormatNumber.Locales exposing (usLocale)
+import Json.Decode exposing (Decoder, andThen, int, succeed)
 
 
 type Money
     = Money Int
+
+
+decodeMoney : Decoder Money
+decodeMoney =
+    int |> andThen (fromYNAB >> succeed)
+
+
+fromYNAB : Int -> Money
+fromYNAB value =
+    Money (value // 10)
 
 
 create : Float -> Money

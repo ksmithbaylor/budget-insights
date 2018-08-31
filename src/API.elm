@@ -1,6 +1,6 @@
-module API exposing (Token, fetchBudgetSummaries, fetchToken, usableToken)
+module API exposing (Token, fetchBudgetByID, fetchBudgetSummaries, fetchToken, usableToken)
 
-import Data.Budget as Budget exposing (Budget, BudgetSummaries, BudgetSummary, decodeBudget, decodeBudgetSummaries, decodeBudgetSummary)
+import Data.Budget as Budget exposing (Budget, BudgetSummaries, BudgetSummary, decodeBudgetResponse, decodeBudgetSummaries, decodeBudgetSummary)
 import Data.Money
 import Date exposing (Date)
 import Dict.Any as AnyDict
@@ -64,7 +64,7 @@ fetchBudgetSummaries token msg =
         |> Http.send msg
 
 
-fetchBudgetByID : Budget.ID -> Token -> (Result Http.Error Budget -> msg) -> Cmd msg
-fetchBudgetByID id token msg =
-    ynabRequest token ("/budgets/" ++ Budget.idToString id) decodeBudget
+fetchBudgetByID : Token -> Budget.ID -> (Result Http.Error Budget -> msg) -> Cmd msg
+fetchBudgetByID token id msg =
+    ynabRequest token ("/budgets/" ++ Budget.idToString id) decodeBudgetResponse
         |> Http.send msg

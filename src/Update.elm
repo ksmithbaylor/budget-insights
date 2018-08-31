@@ -1,10 +1,10 @@
 module Update exposing (Msg(..), init, update)
 
-import API exposing (Token, fetchBudgetSummaries, fetchToken, usableToken)
+import API exposing (Token, fetchBudgetByID, fetchBudgetSummaries, fetchToken, usableToken)
 import Browser exposing (UrlRequest(..))
 import Browser.Navigation as Navigation
 import Cmd.Extra exposing (..)
-import Data.Budget as Budget exposing (BudgetSummaries, BudgetSummary)
+import Data.Budget as Budget exposing (Budget, BudgetSummaries, BudgetSummary)
 import Dict.Any as AnyDict
 import Http
 import Model exposing (Model(..))
@@ -18,6 +18,7 @@ import Url exposing (Url)
 type Msg
     = GotToken (Result Http.Error Token)
     | GotBudgetSummaries (Result Http.Error BudgetSummaries)
+    | GotBudget (Result Http.Error Budget)
     | SelectedBudget BudgetSummary
     | GoBack
     | ClickedLink UrlRequest
@@ -52,7 +53,7 @@ update msg model =
 
                 Just budget ->
                     Dashboard { budgets = budgets, budget = budget, token = token }
-                        |> withNoCmd
+                        |> withCmd (fetchBudgetByID token budget.id GotBudget)
 
         -- Budget picking screen
         ( PickingBudget budgets _, GotToken (Ok token) ) ->
@@ -65,7 +66,7 @@ update msg model =
 
         ( PickingBudget budgets token, SelectedBudget budget ) ->
             Dashboard { budgets = budgets, budget = budget, token = token }
-                |> withNoCmd
+                |> withCmd (fetchBudgetByID token budget.id GotBudget)
 
         -- On the dashboard
         ( Dashboard { budgets, token }, GoBack ) ->
@@ -86,8 +87,19 @@ update msg model =
                     PickingBudget budgets state.token
                         |> withNoCmd
 
+        ( Dashboard state, GotBudget (Ok budget) ) ->
+            let
+                logBudget =
+                    Debug.log "budget" budget
+            in
+            Dashboard state |> withNoCmd
+
         -- Error handling
         ( _, GotBudgetSummaries (Err error) ) ->
+            SomethingWentWrong error
+                |> withNoCmd
+
+        ( _, GotBudget (Err error) ) ->
             SomethingWentWrong error
                 |> withNoCmd
 
