@@ -88,10 +88,10 @@ update msg model =
                         |> withNoCmd
 
         ( Dashboard state, GotBudget (Ok budget) ) ->
-            let
-                logBudget =
-                    Debug.log "budget" budget
-            in
+            -- let
+            -- logBudget =
+            -- Debug.log "budget" budget
+            -- in
             Dashboard state |> withNoCmd
 
         -- Error handling

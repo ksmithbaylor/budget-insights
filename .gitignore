@@ -1,8 +1,6 @@
-elm.js
-elm.min.js
-index.html
-elm-stuff
-elm-package.json
 node_modules
+elm-stuff
+build
+elm-package.json
 .env
 .vscode
