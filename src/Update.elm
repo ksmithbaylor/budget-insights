@@ -64,22 +64,18 @@ update msg model =
             PickingBudget { budgetSummaries = budgets, token = token }
                 |> withNoCmd
 
-        ( Dashboard state, GotBudgetSummaries (Ok budgets) ) ->
-            case AnyDict.get state.budget.id budgets of
-                Just budget ->
-                    Dashboard { budgets = budgets, budget = budget, token = state.token }
+        ( Dashboard { budget, token }, GotBudgetSummaries (Ok budgets) ) ->
+            case AnyDict.get budget.id budgets of
+                Just foundBudget ->
+                    Dashboard { budgets = budgets, budget = foundBudget, token = token }
                         |> withNoCmd
 
                 Nothing ->
-                    PickingBudget { budgetSummaries = budgets, token = state.token }
+                    PickingBudget { budgetSummaries = budgets, token = token }
                         |> withNoCmd
 
-        ( Dashboard state, GotBudget (Ok budget) ) ->
-            -- let
-            -- logBudget =
-            -- Debug.log "budget" budget
-            -- in
-            Dashboard state |> withNoCmd
+        ( Dashboard dashboardModel, GotBudget (Ok budget) ) ->
+            Dashboard dashboardModel |> withNoCmd
 
         -- Error handling
         ( _, GotBudgetSummaries (Err error) ) ->

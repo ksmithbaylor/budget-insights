@@ -5,15 +5,15 @@ import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
 import Http
-import Model exposing (DashboardState, Model(..))
+import Model.Dashboard exposing (Model)
 import Update exposing (Msg(..))
 
 
-view : DashboardState -> Html Msg
-view state =
+view : Model -> Html Msg
+view model =
     div [ class "dashboard" ]
-        [ viewTopBar state.budget
-        , viewMain state
+        [ viewTopBar model.budget
+        , viewMain model
         ]
 
 
@@ -25,6 +25,6 @@ viewTopBar budget =
         ]
 
 
-viewMain : DashboardState -> Html Msg
-viewMain state =
+viewMain : Model -> Html Msg
+viewMain model =
     div [ class "main shadow-box no-hover" ] []
