@@ -39,8 +39,8 @@ viewPage model =
         PickingBudget subModel ->
             PickingBudget.view subModel
 
-        Dashboard state ->
-            Dashboard.view state
+        Dashboard subModel ->
+            Dashboard.view subModel
 
-        SomethingWentWrong error ->
-            SomethingWentWrong.view error
+        SomethingWentWrong subModel ->
+            SomethingWentWrong.view subModel
