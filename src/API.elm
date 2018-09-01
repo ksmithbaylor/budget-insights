@@ -1,4 +1,4 @@
-module API exposing (Token, fetchBudgetByID, fetchBudgetSummaries, fetchToken, usableToken)
+module API exposing (Token, decodeToken, fetchBudgetByID, fetchBudgetSummaries, fetchToken, usableToken)
 
 import Data.Budget as Budget exposing (Budget, BudgetSummaries, BudgetSummary, decodeBudgetResponse, decodeBudgetSummaries, decodeBudgetSummary)
 import Data.Money

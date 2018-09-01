@@ -1,12 +1,13 @@
-module Update exposing (Msg(..), init, update)
+module Update exposing (Flags, Msg(..), init, update)
 
-import API exposing (Token, fetchBudgetByID, fetchBudgetSummaries, fetchToken, usableToken)
+import API exposing (Token, decodeToken, fetchBudgetByID, fetchBudgetSummaries, fetchToken, usableToken)
 import Browser exposing (UrlRequest(..))
 import Browser.Navigation as Navigation
 import Cmd.Extra exposing (..)
 import Data.Budget as Budget exposing (Budget, BudgetSummaries, BudgetSummary)
 import Dict.Any as AnyDict
 import Http
+import Json.Decode
 import Model exposing (Model(..))
 import Url exposing (Url)
 
@@ -25,11 +26,27 @@ type Msg
     | UrlChanged Url
 
 
-init : () -> Url -> Navigation.Key -> ( Model, Cmd Msg )
+type alias Flags =
+    Json.Decode.Value
+
+
+init : Flags -> Url -> Navigation.Key -> ( Model, Cmd Msg )
 init flags url key =
-    ( Initializing (Just Budget.defaultBudgetID)
-    , fetchToken GotToken
-    )
+    let
+        possibleToken =
+            Json.Decode.decodeValue decodeToken flags
+
+        budgetID =
+            Just Budget.defaultBudgetID
+    in
+    case possibleToken of
+        Ok token ->
+            FetchingBudgetSummaries budgetID token
+                |> withCmd (fetchBudgetSummaries token GotBudgetSummaries)
+
+        Err error ->
+            Initializing budgetID
+                |> withCmd (fetchToken GotToken)
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
