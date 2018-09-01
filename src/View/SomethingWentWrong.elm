@@ -4,26 +4,32 @@ import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
 import Http
+import Model.SomethingWentWrong exposing (Error(..), Model)
 import Update exposing (Msg)
 
 
-view : Http.Error -> Html Msg
-view error =
+view : Model -> Html Msg
+view model =
     div [ class "error" ]
         [ text <|
-            case error of
-                Http.Timeout ->
-                    "Request timed out"
+            case model.error of
+                LogicError message ->
+                    message
 
-                Http.NetworkError ->
-                    "Something went wrong with a request"
+                FetchError error ->
+                    case error of
+                        Http.Timeout ->
+                            "Request timed out"
 
-                Http.BadUrl str ->
-                    "Badly-formed URL: " ++ str
+                        Http.NetworkError ->
+                            "Something went wrong with a request"
 
-                Http.BadStatus _ ->
-                    "Non-200 status code"
+                        Http.BadUrl str ->
+                            "Badly-formed URL: " ++ str
 
-                Http.BadPayload message _ ->
-                    "Error decoding response: " ++ message
+                        Http.BadStatus _ ->
+                            "Non-200 status code"
+
+                        Http.BadPayload message _ ->
+                            "Error decoding response: " ++ message
         ]

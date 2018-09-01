@@ -10,6 +10,7 @@ import Flags exposing (Flags)
 import Http
 import Json.Decode
 import Model exposing (Model(..), initialModel)
+import Model.SomethingWentWrong
 import Url exposing (Url)
 
 
@@ -79,11 +80,11 @@ update msg model =
 
         -- Error handling
         ( _, GotBudgetSummaries (Err error) ) ->
-            SomethingWentWrong error
+            SomethingWentWrong { error = Model.SomethingWentWrong.FetchError error }
                 |> withNoCmd
 
         ( _, GotBudget (Err error) ) ->
-            SomethingWentWrong error
+            SomethingWentWrong { error = Model.SomethingWentWrong.FetchError error }
                 |> withNoCmd
 
         -- Ignore any unexpected messages sent to the wrong page

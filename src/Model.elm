@@ -7,13 +7,14 @@ import Http
 import Model.Dashboard as Dashboard
 import Model.Initializing as Initializing
 import Model.PickingBudget as PickingBudget
+import Model.SomethingWentWrong as SomethingWentWrong
 
 
 type Model
     = Initializing Initializing.Model
     | PickingBudget PickingBudget.Model
     | Dashboard Dashboard.Model
-    | SomethingWentWrong Http.Error
+    | SomethingWentWrong SomethingWentWrong.Model
 
 
 initialModel : Flags -> Model
