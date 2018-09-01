@@ -1,7 +1,6 @@
-module Update exposing (Msg(..), init, update)
+module Update exposing (init, update)
 
 import API exposing (Token, fetchBudgetByID, fetchBudgetSummaries)
-import Browser exposing (UrlRequest(..))
 import Browser.Navigation as Navigation
 import Cmd.Extra exposing (..)
 import Data.Budget as Budget exposing (Budget, BudgetSummaries, BudgetSummary)
@@ -11,20 +10,8 @@ import Http
 import Json.Decode
 import Model exposing (Model(..), initialModel)
 import Model.SomethingWentWrong
+import Msg exposing (Msg(..))
 import Url exposing (Url)
-
-
-
--- UPDATE
-
-
-type Msg
-    = GotBudgetSummaries (Result Http.Error BudgetSummaries)
-    | GotBudget (Result Http.Error Budget)
-    | SelectedBudget BudgetSummary
-    | GoBack
-    | ClickedLink UrlRequest
-    | UrlChanged Url
 
 
 init : Flags -> Url -> Navigation.Key -> ( Model, Cmd Msg )

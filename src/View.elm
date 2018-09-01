@@ -5,7 +5,7 @@ import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
 import Model exposing (Model(..))
-import Update exposing (Msg)
+import Msg exposing (Msg)
 import View.Dashboard as Dashboard
 import View.Initializing as Initializing
 import View.PickingBudget as PickingBudget

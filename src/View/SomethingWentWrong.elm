@@ -5,7 +5,7 @@ import Html.Attributes exposing (..)
 import Html.Events exposing (..)
 import Http
 import Model.SomethingWentWrong exposing (Error(..), Model)
-import Update exposing (Msg)
+import Msg exposing (Msg)
 
 
 view : Model -> Html Msg

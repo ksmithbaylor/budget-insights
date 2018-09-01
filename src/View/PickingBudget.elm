@@ -7,7 +7,7 @@ import Html.Attributes exposing (..)
 import Html.Events exposing (..)
 import ISO8601
 import Model.PickingBudget exposing (Model)
-import Update exposing (Msg(..))
+import Msg exposing (Msg(..))
 
 
 view : Model -> Html Msg
