@@ -8,6 +8,7 @@ import Model exposing (Model(..))
 import Update exposing (Msg)
 import View.Dashboard as Dashboard
 import View.Error as Error
+import View.Initializing as Initializing
 import View.PickingBudget as PickingBudget
 
 
@@ -32,8 +33,8 @@ view model =
 viewPage : Model -> Html Msg
 viewPage model =
     case model of
-        Initializing _ ->
-            div [] []
+        Initializing subModel ->
+            Initializing.view subModel
 
         PickingBudget subModel ->
             PickingBudget.view subModel
