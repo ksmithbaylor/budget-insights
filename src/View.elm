@@ -7,9 +7,9 @@ import Html.Events exposing (..)
 import Model exposing (Model(..))
 import Update exposing (Msg)
 import View.Dashboard as Dashboard
-import View.Error as Error
 import View.Initializing as Initializing
 import View.PickingBudget as PickingBudget
+import View.SomethingWentWrong as SomethingWentWrong
 
 
 view : Model -> Browser.Document Msg
@@ -43,4 +43,4 @@ viewPage model =
             Dashboard.view state
 
         SomethingWentWrong error ->
-            Error.view error
+            SomethingWentWrong.view error
