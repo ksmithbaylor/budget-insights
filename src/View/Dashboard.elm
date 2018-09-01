@@ -12,19 +12,24 @@ import Msg exposing (Msg(..))
 view : Model -> Html Msg
 view model =
     div [ class "dashboard" ]
-        [ viewTopBar model.budget
+        [ viewTopBar model.budgetSummary
         , viewMain model
         ]
 
 
 viewTopBar : BudgetSummary -> Html Msg
-viewTopBar budget =
+viewTopBar budgetSummary =
     div [ class "top-bar" ]
         [ button [ class "back shadow-box", onClick GoBack ] [ text "⬅" ]
-        , span [ class "budget-name" ] [ text budget.name ]
+        , span [ class "budget-name" ] [ text budgetSummary.name ]
         ]
 
 
 viewMain : Model -> Html Msg
 viewMain model =
-    div [ class "main shadow-box no-hover" ] []
+    div [ class "main shadow-box no-hover" ] <|
+        if model.loading then
+            [ text "Loading..." ]
+
+        else
+            [ text <| Debug.toString model ]

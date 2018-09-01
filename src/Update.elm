@@ -28,42 +28,42 @@ update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case ( model, msg ) of
         -- Have a token, now fetching the list of budgets
-        ( Initializing { token, lastBudgetID }, GotBudgetSummaries (Ok budgets) ) ->
-            case lastBudgetID |> Maybe.andThen (\id -> AnyDict.get id budgets) of
+        ( Initializing { token, lastBudgetID }, GotBudgetSummaries (Ok budgetSummaries) ) ->
+            case lastBudgetID |> Maybe.andThen (\id -> AnyDict.get id budgetSummaries) of
                 Nothing ->
-                    PickingBudget { budgetSummaries = budgets, token = token }
+                    PickingBudget { budgetSummaries = budgetSummaries, token = token }
                         |> withNoCmd
 
                 Just budget ->
-                    Dashboard { budgets = budgets, budget = budget, token = token }
+                    Dashboard { budgetSummaries = budgetSummaries, budgetSummary = budget, token = token, loading = True }
                         |> withCmd (fetchBudgetByID token budget.id GotBudget)
 
         -- Budget picking screen
-        ( PickingBudget { token }, GotBudgetSummaries (Ok budgets) ) ->
-            PickingBudget { budgetSummaries = budgets, token = token }
+        ( PickingBudget { token }, GotBudgetSummaries (Ok budgetSummaries) ) ->
+            PickingBudget { budgetSummaries = budgetSummaries, token = token }
                 |> withNoCmd
 
         ( PickingBudget { budgetSummaries, token }, SelectedBudget budget ) ->
-            Dashboard { budgets = budgetSummaries, budget = budget, token = token }
+            Dashboard { budgetSummaries = budgetSummaries, budgetSummary = budget, token = token, loading = True }
                 |> withCmd (fetchBudgetByID token budget.id GotBudget)
 
         -- On the dashboard
-        ( Dashboard { budgets, token }, GoBack ) ->
-            PickingBudget { budgetSummaries = budgets, token = token }
+        ( Dashboard { budgetSummaries, token }, GoBack ) ->
+            PickingBudget { budgetSummaries = budgetSummaries, token = token }
                 |> withNoCmd
 
-        ( Dashboard { budget, token }, GotBudgetSummaries (Ok budgets) ) ->
-            case AnyDict.get budget.id budgets of
+        ( Dashboard { budgetSummary, token }, GotBudgetSummaries (Ok budgetSummaries) ) ->
+            case AnyDict.get budgetSummary.id budgetSummaries of
                 Just foundBudget ->
-                    Dashboard { budgets = budgets, budget = foundBudget, token = token }
+                    Dashboard { budgetSummaries = budgetSummaries, budgetSummary = foundBudget, token = token, loading = False }
                         |> withNoCmd
 
                 Nothing ->
-                    PickingBudget { budgetSummaries = budgets, token = token }
+                    PickingBudget { budgetSummaries = budgetSummaries, token = token }
                         |> withNoCmd
 
         ( Dashboard dashboardModel, GotBudget (Ok budget) ) ->
-            Dashboard dashboardModel |> withNoCmd
+            Dashboard { dashboardModel | loading = False } |> withNoCmd
 
         -- Error handling
         ( _, GotBudgetSummaries (Err error) ) ->

@@ -5,7 +5,8 @@ import Data.Budget exposing (BudgetSummaries, BudgetSummary)
 
 
 type alias Model =
-    { budgets : BudgetSummaries
-    , budget : BudgetSummary
+    { budgetSummaries : BudgetSummaries
+    , budgetSummary : BudgetSummary
+    , loading : Bool
     , token : Token
     }
