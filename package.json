@@ -1,7 +1,7 @@
 {
-  "name": "long-term-plans",
+  "name": "budget-insights",
   "version": "1.0.0",
-  "main": "index.js",
+  "main": "src/index.js",
   "author": "Kevin Smith <ksmithbaylor@gmail.com>",
   "license": "MIT",
   "scripts": {
