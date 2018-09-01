@@ -6,16 +6,16 @@ import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
 import ISO8601
-import Model exposing (DashboardState, Model(..))
+import Model.PickingBudget exposing (Model)
 import Update exposing (Msg(..))
 
 
-view : BudgetSummaries -> Html Msg
-view budgets =
+view : Model -> Html Msg
+view { budgetSummaries } =
     div [ class "budget-list" ]
         [ h1 [] [ text "Available Budgets" ]
         , div [ class "flow" ]
-            (budgets
+            (budgetSummaries
                 |> AnyDict.values
                 |> List.sortBy (.lastModified >> ISO8601.toString)
                 |> List.reverse

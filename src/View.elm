@@ -6,9 +6,9 @@ import Html.Attributes exposing (..)
 import Html.Events exposing (..)
 import Model exposing (Model(..))
 import Update exposing (Msg)
-import View.Dashboard
-import View.Error
-import View.PickingBudget
+import View.Dashboard as Dashboard
+import View.Error as Error
+import View.PickingBudget as PickingBudget
 
 
 view : Model -> Browser.Document Msg
@@ -35,11 +35,11 @@ viewPage model =
         Initializing _ ->
             div [] []
 
-        PickingBudget budgets _ ->
-            View.PickingBudget.view budgets
+        PickingBudget subModel ->
+            PickingBudget.view subModel
 
         Dashboard state ->
-            View.Dashboard.view state
+            Dashboard.view state
 
         SomethingWentWrong error ->
-            View.Error.view error
+            Error.view error

@@ -43,7 +43,7 @@ update msg model =
         ( Initializing { token, lastBudgetID }, GotBudgetSummaries (Ok budgets) ) ->
             case lastBudgetID |> Maybe.andThen (\id -> AnyDict.get id budgets) of
                 Nothing ->
-                    PickingBudget budgets token
+                    PickingBudget { budgetSummaries = budgets, token = token }
                         |> withNoCmd
 
                 Just budget ->
@@ -51,17 +51,17 @@ update msg model =
                         |> withCmd (fetchBudgetByID token budget.id GotBudget)
 
         -- Budget picking screen
-        ( PickingBudget _ token, GotBudgetSummaries (Ok budgets) ) ->
-            PickingBudget budgets token
+        ( PickingBudget { token }, GotBudgetSummaries (Ok budgets) ) ->
+            PickingBudget { budgetSummaries = budgets, token = token }
                 |> withNoCmd
 
-        ( PickingBudget budgets token, SelectedBudget budget ) ->
-            Dashboard { budgets = budgets, budget = budget, token = token }
+        ( PickingBudget { budgetSummaries, token }, SelectedBudget budget ) ->
+            Dashboard { budgets = budgetSummaries, budget = budget, token = token }
                 |> withCmd (fetchBudgetByID token budget.id GotBudget)
 
         -- On the dashboard
         ( Dashboard { budgets, token }, GoBack ) ->
-            PickingBudget budgets token
+            PickingBudget { budgetSummaries = budgets, token = token }
                 |> withNoCmd
 
         ( Dashboard state, GotBudgetSummaries (Ok budgets) ) ->
@@ -71,7 +71,7 @@ update msg model =
                         |> withNoCmd
 
                 Nothing ->
-                    PickingBudget budgets state.token
+                    PickingBudget { budgetSummaries = budgets, token = state.token }
                         |> withNoCmd
 
         ( Dashboard state, GotBudget (Ok budget) ) ->
