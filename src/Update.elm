@@ -1,14 +1,15 @@
-module Update exposing (Flags, Msg(..), init, update)
+module Update exposing (Msg(..), init, update)
 
-import API exposing (Token, decodeToken, fetchBudgetByID, fetchBudgetSummaries, fetchToken, usableToken)
+import API exposing (Token, fetchBudgetByID, fetchBudgetSummaries)
 import Browser exposing (UrlRequest(..))
 import Browser.Navigation as Navigation
 import Cmd.Extra exposing (..)
 import Data.Budget as Budget exposing (Budget, BudgetSummaries, BudgetSummary)
 import Dict.Any as AnyDict
+import Flags exposing (Flags)
 import Http
 import Json.Decode
-import Model exposing (Model(..))
+import Model exposing (Model(..), initialModel)
 import Url exposing (Url)
 
 
@@ -17,8 +18,7 @@ import Url exposing (Url)
 
 
 type Msg
-    = GotToken (Result Http.Error Token)
-    | GotBudgetSummaries (Result Http.Error BudgetSummaries)
+    = GotBudgetSummaries (Result Http.Error BudgetSummaries)
     | GotBudget (Result Http.Error Budget)
     | SelectedBudget BudgetSummary
     | GoBack
@@ -26,44 +26,22 @@ type Msg
     | UrlChanged Url
 
 
-type alias Flags =
-    Json.Decode.Value
-
-
 init : Flags -> Url -> Navigation.Key -> ( Model, Cmd Msg )
 init flags url key =
-    let
-        possibleToken =
-            Json.Decode.decodeValue decodeToken flags
+    ( initialModel flags, initialCmd flags )
 
-        budgetID =
-            Just Budget.defaultBudgetID
-    in
-    case possibleToken of
-        Ok token ->
-            FetchingBudgetSummaries budgetID token
-                |> withCmd (fetchBudgetSummaries token GotBudgetSummaries)
 
-        Err error ->
-            Initializing budgetID
-                |> withCmd (fetchToken GotToken)
+initialCmd : Flags -> Cmd Msg
+initialCmd flags =
+    fetchBudgetSummaries flags.token GotBudgetSummaries
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case ( model, msg ) of
-        -- Initial page load
-        ( Initializing possibleBudgetID, GotToken (Ok token) ) ->
-            FetchingBudgetSummaries possibleBudgetID token
-                |> withCmd (fetchBudgetSummaries token GotBudgetSummaries)
-
         -- Have a token, now fetching the list of budgets
-        ( FetchingBudgetSummaries possibleBudgetID token, GotBudgetSummaries (Ok budgets) ) ->
-            let
-                possibleBudget =
-                    possibleBudgetID |> Maybe.andThen (\id -> AnyDict.get id budgets)
-            in
-            case possibleBudget of
+        ( Initializing { token, lastBudgetID }, GotBudgetSummaries (Ok budgets) ) ->
+            case lastBudgetID |> Maybe.andThen (\id -> AnyDict.get id budgets) of
                 Nothing ->
                     PickingBudget budgets token
                         |> withNoCmd
@@ -73,10 +51,6 @@ update msg model =
                         |> withCmd (fetchBudgetByID token budget.id GotBudget)
 
         -- Budget picking screen
-        ( PickingBudget budgets _, GotToken (Ok token) ) ->
-            PickingBudget budgets token
-                |> withNoCmd
-
         ( PickingBudget _ token, GotBudgetSummaries (Ok budgets) ) ->
             PickingBudget budgets token
                 |> withNoCmd
@@ -88,10 +62,6 @@ update msg model =
         -- On the dashboard
         ( Dashboard { budgets, token }, GoBack ) ->
             PickingBudget budgets token
-                |> withNoCmd
-
-        ( Dashboard state, GotToken (Ok token) ) ->
-            Dashboard { state | token = token }
                 |> withNoCmd
 
         ( Dashboard state, GotBudgetSummaries (Ok budgets) ) ->
@@ -117,10 +87,6 @@ update msg model =
                 |> withNoCmd
 
         ( _, GotBudget (Err error) ) ->
-            SomethingWentWrong error
-                |> withNoCmd
-
-        ( _, GotToken (Err error) ) ->
             SomethingWentWrong error
                 |> withNoCmd
 

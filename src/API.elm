@@ -1,4 +1,4 @@
-module API exposing (Token, decodeToken, fetchBudgetByID, fetchBudgetSummaries, fetchToken, usableToken)
+module API exposing (Token, fetchBudgetByID, fetchBudgetSummaries)
 
 import Data.Budget as Budget exposing (Budget, BudgetSummaries, BudgetSummary, decodeBudgetResponse, decodeBudgetSummaries, decodeBudgetSummary)
 import Data.Money
@@ -11,34 +11,8 @@ import Json.Decode.Extra exposing (fromResult)
 import Json.Decode.Pipeline exposing (..)
 
 
-
--- Token
-
-
-type Token
-    = Token String
-
-
-decodeToken : Decoder Token
-decodeToken =
-    succeed Token
-        |> required "token" string
-
-
-fetchToken : (Result Http.Error Token -> msg) -> Cmd msg
-fetchToken msg =
-    Http.get "http://localhost:4000/token" decodeToken
-        |> Http.send msg
-
-
-usableToken : Maybe Token -> Token
-usableToken possibleToken =
-    case possibleToken of
-        Nothing ->
-            Token ""
-
-        Just token ->
-            token
+type alias Token =
+    String
 
 
 
@@ -46,7 +20,7 @@ usableToken possibleToken =
 
 
 ynabRequest : Token -> String -> Decoder a -> Http.Request a
-ynabRequest (Token token) path decoder =
+ynabRequest token path decoder =
     Http.request
         { method = "GET"
         , headers = [ Http.header "Authorization" ("Bearer " ++ token) ]

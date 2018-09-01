@@ -1,17 +1,22 @@
-module Model exposing (DashboardState, Model(..))
+module Model exposing (DashboardState, Model(..), initialModel)
 
 import API exposing (Token)
 import Data.Budget as Budget exposing (BudgetSummaries, BudgetSummary)
-import Dict.Any as AnyDict
+import Flags exposing (Flags)
 import Http
+import Model.Initializing as Initializing
 
 
 type Model
-    = Initializing (Maybe Budget.ID)
-    | FetchingBudgetSummaries (Maybe Budget.ID) Token
+    = Initializing Initializing.Model
     | PickingBudget BudgetSummaries Token
     | Dashboard DashboardState
     | SomethingWentWrong Http.Error
+
+
+initialModel : Flags -> Model
+initialModel flags =
+    Initializing (Initializing.initialModel flags)
 
 
 type alias DashboardState =
