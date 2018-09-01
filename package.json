@@ -6,6 +6,7 @@
   "license": "MIT",
   "scripts": {
     "start": "run-p frontend:dev backend:dev",
+    "build": "yarn frontend:build",
     "prod": "npm-run-all frontend:build --parallel frontend:serve backend:prod",
     "test": "elm-test",
     "test:watch": "elm-test --watch",
