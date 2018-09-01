@@ -24,8 +24,7 @@ view model =
     in
     { title = title
     , body =
-        [ styleTag
-        , viewPage model
+        [ viewPage model
         ]
     }
 
@@ -47,8 +46,3 @@ viewPage model =
 
         SomethingWentWrong error ->
             View.Error.view error
-
-
-styleTag : Html msg
-styleTag =
-    node "link" [ rel "stylesheet", href "main.css" ] []
