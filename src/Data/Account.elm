@@ -1,4 +1,10 @@
-module Data.Account exposing (Account, Accounts, decodeAccount, decodeAccounts)
+module Data.Account exposing
+    ( Account
+    , Accounts
+    , decodeAccount
+    , decodeAccounts
+    , idToString
+    )
 
 import Data.Money exposing (Money, decodeMoney)
 import Dict.Any as AnyDict exposing (AnyDict)

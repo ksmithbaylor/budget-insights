@@ -1,4 +1,15 @@
-module Data.Budget exposing (Budget, BudgetSummaries, BudgetSummary, ID, decodeBudgetResponse, decodeBudgetSummaries, decodeBudgetSummary, defaultBudgetID, idToString)
+module Data.Budget exposing
+    ( Budget
+    , BudgetSummaries
+    , BudgetSummary
+    , Budgets
+    , ID
+    , decodeBudgetResponse
+    , decodeBudgetSummaries
+    , decodeBudgetSummary
+    , defaultBudgetID
+    , idToString
+    )
 
 import Data.Account as Account exposing (Accounts, decodeAccounts)
 import Date exposing (Date)
@@ -84,6 +95,10 @@ type alias Budget =
     -- , scheduledTransactions : ScheduledTransactions
     -- , scheduledSubTransactions : ScheduledSubTransactions
     }
+
+
+type alias Budgets =
+    AnyDict String ID Budget
 
 
 decodeBudget : Decoder Budget

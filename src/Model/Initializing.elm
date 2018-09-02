@@ -1,4 +1,4 @@
-module Model.Initializing exposing (Model, initialModel)
+module Model.Initializing exposing (Model, init)
 
 import API exposing (Token, fetchBudgetSummaries)
 import Cmd.Extra exposing (withCmd)
@@ -12,8 +12,8 @@ type alias Model =
     }
 
 
-initialModel : Flags -> Model
-initialModel flags =
+init : Flags -> Model
+init flags =
     { token = flags.token
     , lastBudgetID = Just Budget.defaultBudgetID
     }

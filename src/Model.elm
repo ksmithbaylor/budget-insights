@@ -8,6 +8,7 @@ import Model.Dashboard as Dashboard
 import Model.Initializing as Initializing
 import Model.PickingBudget as PickingBudget
 import Model.SomethingWentWrong as SomethingWentWrong
+import Router
 
 
 type Model
@@ -19,4 +20,4 @@ type Model
 
 initialModel : Flags -> Model
 initialModel flags =
-    Initializing (Initializing.initialModel flags)
+    Initializing (Initializing.init flags)
