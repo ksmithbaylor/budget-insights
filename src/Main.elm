@@ -64,18 +64,14 @@ update msg model =
             let
                 ( newContextModel, contextCmd ) =
                     Context.update contextMsg contextModel
+                        |> R2.mapCmd ContextMsg
 
-                ( newPageModel, pageCmd, maybeContextMsg ) =
-                    Page.update (Page.ContextMsg contextMsg) pageModel
-
-                newModel =
-                    ( newContextModel, newPageModel )
+                ( ( _, newPageModel ), cmd ) =
+                    update (contextMsg |> Page.ContextMsg |> PageMsg) model
             in
-            handlePageReply newPageModel maybeContextMsg newModel
-                |> R2.addCmd (combineCmds contextCmd pageCmd)
+            ( newContextModel, newPageModel )
+                |> R2.withCmds [ cmd, contextCmd ]
 
-        -- |> R3.incorp handlePageReply model
-        -- |> R3.mapCmd (combineCmds contextCmd)
         PageMsg pageMsg ->
             Page.update pageMsg pageModel
                 |> R3.mapCmd PageMsg
