@@ -66,6 +66,16 @@ update msg model =
                 |> R3.mapModel (\subModel -> { model | budgetSelector = subModel })
                 |> R3.mapCmd BudgetSelectorMsg
 
+        DashboardMsg subMsg ->
+            Dashboard.update subMsg model.dashboard
+                |> R3.mapModel (\subModel -> { model | dashboard = subModel })
+                |> R3.mapCmd DashboardMsg
+
+        SomethingWentWrongMsg subMsg ->
+            SomethingWentWrong.update subMsg model.somethingWentWrong
+                |> R3.mapModel (\subModel -> { model | somethingWentWrong = subModel })
+                |> R3.mapCmd SomethingWentWrongMsg
+
         ContextMsg (Context.FetchError error) ->
             { model | currentPage = SomethingWentWrong }
                 |> R3.withNothing
