@@ -1,33 +1,31 @@
-module Router exposing (Model)
+module Router exposing (Route(..), fromUrl)
 
-import Flags exposing (Flags)
-import Model.Dashboard as Dashboard
-import Model.Initializing as Initializing
-import Model.PickingBudget as PickingBudget
-import Model.SomethingWentWrong as SomethingWentWrong
-
-
-type alias Model =
-    { route : Route
-    , initializing : Initializing.Model
-    , pickingBudget : PickingBudget.Model
-    , dashboard : Dashboard.Model
-    , somethingWentWrong : SomethingWentWrong.Model
-    }
+import Data.Budget as Budget
+import Url exposing (Url)
+import Url.Parser as Url exposing ((</>), Parser, s, top)
 
 
 type Route
-    = InitializingRoute
-    | PickingBudgetRoute
-    | DashboardRoute
-    | SomethingWentWrongRoute
+    = BudgetSelector
+    | Dashboard Budget.ID
+    | Oops
 
 
-init : Flags -> Model
-init flags =
-    { route = InitializingRoute
-    , initializing = Initializing.init flags
-    , pickingBudget = PickingBudget.init flags
-    , dashboard = Dashboard.init flags
-    , somethingWentWrong = SomethingWentWrong.init flags
-    }
+fromUrl : Url -> Result String Route
+fromUrl url =
+    Url.parse routeParser url
+        |> Result.fromMaybe url.path
+
+
+routeParser : Parser (Route -> a) a
+routeParser =
+    Url.oneOf
+        [ Url.map BudgetSelector top
+        , Url.map Dashboard (s "budgets" </> budgetID)
+        , Url.map Oops (s "oops")
+        ]
+
+
+budgetID : Parser (Budget.ID -> a) a
+budgetID =
+    Url.custom "BUDGET_ID" (Just << Budget.idFromString)

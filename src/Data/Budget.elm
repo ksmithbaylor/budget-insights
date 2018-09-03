@@ -8,6 +8,7 @@ module Data.Budget exposing
     , decodeBudgetSummaries
     , decodeBudgetSummary
     , defaultBudgetID
+    , idFromString
     , idToString
     )
 
@@ -41,6 +42,11 @@ defaultBudgetID =
 idToString : ID -> String
 idToString (ID id) =
     id
+
+
+idFromString : String -> ID
+idFromString s =
+    ID s
 
 
 

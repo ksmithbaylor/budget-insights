@@ -9,6 +9,7 @@ module Page.BudgetSelector exposing
 
 import API exposing (fetchBudgetSummaries)
 import Context
+import CustomError
 import Data.Budget as Budget exposing (BudgetSummaries, BudgetSummary)
 import Dict.Any as AnyDict
 import Flags exposing (Flags)
@@ -52,7 +53,7 @@ update msg model =
         GotBudgetSummaries (Err error) ->
             model
                 |> R2.withNoCmd
-                |> R3.withReply (Context.FetchError error)
+                |> R3.withReply (Context.ErrorHappened <| CustomError.FetchError error)
 
         SelectedBudget id ->
             model
@@ -84,7 +85,7 @@ view context model =
 
 viewBudget : BudgetSummary -> Html Msg
 viewBudget budget =
-    div [ class "budget shadow-box", onClick (SelectedBudget budget.id) ]
+    a [ class "budget shadow-box", href ("/budgets/" ++ Budget.idToString budget.id) ]
         [ div [ class "budget-name" ] [ text budget.name ]
         , div []
             [ span [] [ text "Last Modified: " ]

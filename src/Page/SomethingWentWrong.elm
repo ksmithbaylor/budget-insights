@@ -8,8 +8,12 @@ module Page.SomethingWentWrong exposing
     )
 
 import Context
+import CustomError exposing (CustomError(..))
 import Flags exposing (Flags)
 import Html exposing (..)
+import Html.Attributes exposing (..)
+import Html.Events exposing (..)
+import Http
 import Return3 as R3 exposing (Return)
 
 
@@ -40,4 +44,21 @@ update msg model =
 
 view : Context.Model -> Model -> Html Msg
 view context model =
-    div [] [ text "something went wrong." ]
+    case context.error of
+        Nothing ->
+            div []
+                [ div [] [ text "Nothing appears to be wrong!" ]
+                , a [ href "/" ] [ text "Go home" ]
+                ]
+
+        Just error ->
+            let
+                errorMessage =
+                    case error of
+                        FetchError httpError ->
+                            "network error"
+
+                        LogicError message ->
+                            message
+            in
+            div [] [ text errorMessage ]
