@@ -31,15 +31,13 @@ initCmd flags =
     Cmd.none
 
 
-type Msg
-    = NoOp
+type alias Msg =
+    ()
 
 
 update : Msg -> Model -> Return Model Msg Context.Msg
 update msg model =
-    case msg of
-        NoOp ->
-            model |> R3.withNothing
+    model |> R3.withNothing
 
 
 view : Context.Model -> Model -> Html Msg
