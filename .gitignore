@@ -4,3 +4,4 @@ build
 elm-package.json
 .env
 .vscode
+todo.txt
