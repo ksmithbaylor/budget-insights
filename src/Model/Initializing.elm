@@ -4,23 +4,24 @@ import API exposing (Token, fetchBudgetSummaries)
 import Cmd.Extra exposing (withCmd)
 import Data.Budget as Budget
 import Flags exposing (Flags)
+import Id exposing (Id)
 
 
 type alias Model =
     { token : Token
-    , lastBudgetID : Maybe Budget.ID
+    , lastBudgetId : Maybe Id
     }
 
 
 init : Flags -> Model
 init flags =
     { token = flags.token
-    , lastBudgetID = Just Budget.defaultBudgetID
+    , lastBudgetId = Just Budget.defaultBudgetId
     }
 
 
 
 -- init : Token -> (Result Http.Error BudgetSummaries -> msg) -> ( Model, Cmd msg )
 -- init token msg =
--- { token = token, lastBudgetID = Just Budget.defaultBudgetID }
+-- { token = token, lastBudgetId = Just Budget.defaultBudgetId }
 -- |> withCmd (fetchBudgetSummaries token msg)

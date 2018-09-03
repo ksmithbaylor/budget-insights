@@ -1,6 +1,6 @@
 module Update exposing (init, update)
 
-import API exposing (Token, fetchBudgetByID, fetchBudgetSummaries)
+import API exposing (Token, fetchBudgetById, fetchBudgetSummaries)
 import Browser.Navigation as Navigation
 import Cmd.Extra exposing (..)
 import Data.Budget as Budget exposing (Budget, BudgetSummaries, BudgetSummary)
@@ -28,15 +28,15 @@ update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case ( model, msg ) of
         -- Have a token, now fetching the list of budgets
-        ( Initializing { token, lastBudgetID }, GotBudgetSummaries (Ok budgetSummaries) ) ->
-            case lastBudgetID |> Maybe.andThen (\id -> AnyDict.get id budgetSummaries) of
+        ( Initializing { token, lastBudgetId }, GotBudgetSummaries (Ok budgetSummaries) ) ->
+            case lastBudgetId |> Maybe.andThen (\id -> AnyDict.get id budgetSummaries) of
                 Nothing ->
                     PickingBudget { budgetSummaries = budgetSummaries, token = token }
                         |> withNoCmd
 
                 Just budget ->
                     Dashboard { budgetSummaries = budgetSummaries, budgetSummary = budget, token = token, loading = True }
-                        |> withCmd (fetchBudgetByID token budget.id GotBudget)
+                        |> withCmd (fetchBudgetById token budget.id GotBudget)
 
         -- Budget picking screen
         ( PickingBudget { token }, GotBudgetSummaries (Ok budgetSummaries) ) ->
@@ -45,7 +45,7 @@ update msg model =
 
         ( PickingBudget { budgetSummaries, token }, SelectedBudget budget ) ->
             Dashboard { budgetSummaries = budgetSummaries, budgetSummary = budget, token = token, loading = True }
-                |> withCmd (fetchBudgetByID token budget.id GotBudget)
+                |> withCmd (fetchBudgetById token budget.id GotBudget)
 
         -- On the dashboard
         ( Dashboard { budgetSummaries, token }, GoBack ) ->

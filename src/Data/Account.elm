@@ -1,35 +1,16 @@
 module Data.Account exposing
     ( Account
-    , Accounts
-    , decodeAccount
-    , decodeAccounts
-    , idToString
+    , decoder
     )
 
 import Data.Money exposing (Money, decodeMoney)
+import Db exposing (Db)
 import Dict.Any as AnyDict exposing (AnyDict)
 import Helpers.Decode exposing (..)
+import Id exposing (Id)
 import Json.Decode exposing (..)
 import Json.Decode.Extra exposing (fromResult)
 import Json.Decode.Pipeline exposing (..)
-
-
-
--- ID
-
-
-type ID
-    = ID String
-
-
-decodeID : Decoder ID
-decodeID =
-    string |> andThen (ID >> succeed)
-
-
-idToString : ID -> String
-idToString (ID id) =
-    id
 
 
 
@@ -37,7 +18,7 @@ idToString (ID id) =
 
 
 type alias Account =
-    { id : ID
+    { id : Id
     , name : String
     , kind : Type
     , onBudget : Bool
@@ -50,10 +31,10 @@ type alias Account =
     }
 
 
-decodeAccount : Decoder Account
-decodeAccount =
+decoder : Decoder Account
+decoder =
     succeed Account
-        |> required "id" decodeID
+        |> required "id" Id.decoder
         |> required "name" string
         |> required "type" decodeType
         |> required "on_budget" bool
@@ -63,16 +44,6 @@ decodeAccount =
         |> required "balance" decodeMoney
         |> required "cleared_balance" decodeMoney
         |> required "uncleared_balance" decodeMoney
-
-
-type alias Accounts =
-    AnyDict String ID Account
-
-
-decodeAccounts : Decoder Accounts
-decodeAccounts =
-    list decodeAccount
-        |> andThen (dictByID idToString >> succeed)
 
 
 type Type

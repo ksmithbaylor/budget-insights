@@ -106,8 +106,8 @@ update msg model context =
                             newModel
                                 |> R3.withNothing
 
-                        Router.Dashboard budgetID ->
-                            update (DashboardMsg <| Dashboard.Init budgetID) model context
+                        Router.Dashboard budgetId ->
+                            update (DashboardMsg <| Dashboard.Init budgetId) model context
                                 |> R3.mapModel (\updatedModel -> { updatedModel | route = route })
 
                         Router.Oops ->
@@ -142,7 +142,7 @@ view context model =
             BudgetSelector.view context model.budgetSelector
                 |> Html.map BudgetSelectorMsg
 
-        Router.Dashboard budgetID ->
+        Router.Dashboard budgetId ->
             Dashboard.view context model.dashboard
                 |> Html.map DashboardMsg
 

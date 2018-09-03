@@ -7,11 +7,13 @@ module Context exposing
 
 import API exposing (Token)
 import CustomError exposing (CustomError(..))
-import Data.Account as Account exposing (Accounts)
-import Data.Budget as Budget exposing (Budget, BudgetSummaries, Budgets)
+import Data.Account as Account exposing (Account)
+import Data.Budget as Budget exposing (Budget)
+import Db exposing (Db)
 import Dict.Any as AnyDict
 import Flags exposing (Flags)
 import Http
+import Id exposing (Id)
 import Return2 as R2
 import Task
 
@@ -19,14 +21,14 @@ import Task
 type alias Model =
     { error : Maybe CustomError
     , token : Token
-    , budgets : Budgets
-    , accounts : Accounts
+    , budgets : Db Budget
+    , accounts : Db Account
     }
 
 
 type Msg
     = ErrorHappened CustomError
-    | RequestBudget Budget.ID
+    | RequestBudget Id
     | GotBudget (Result Http.Error Budget)
 
 
@@ -34,8 +36,8 @@ init : Flags -> ( Model, Cmd Msg )
 init flags =
     { error = Nothing
     , token = flags.token
-    , budgets = AnyDict.empty Budget.idToString
-    , accounts = AnyDict.empty Account.idToString
+    , budgets = Db.empty
+    , accounts = Db.empty
     }
         |> R2.withNoCmd
 
@@ -49,10 +51,10 @@ update msg model =
 
         RequestBudget id ->
             model
-                |> R2.withCmd (API.fetchBudgetByID model.token id GotBudget)
+                |> R2.withCmd (API.fetchBudgetById model.token id GotBudget)
 
         GotBudget (Ok budget) ->
-            { model | budgets = AnyDict.insert budget.id budget model.budgets }
+            { model | budgets = Db.insert budget.id budget model.budgets }
                 |> R2.withNoCmd
 
         _ ->

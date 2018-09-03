@@ -1,60 +1,30 @@
 module Data.Budget exposing
     ( Budget
-    , BudgetSummaries
     , BudgetSummary
-    , Budgets
-    , ID
     , decodeBudgetResponse
     , decodeBudgetSummaries
     , decodeBudgetSummary
-    , defaultBudgetID
-    , idFromString
-    , idToString
+    , defaultBudgetId
     )
 
-import Data.Account as Account exposing (Accounts, decodeAccounts)
+import Data.Account as Account exposing (Account)
 import Date exposing (Date)
+import Db exposing (Db)
 import Dict.Any as AnyDict exposing (AnyDict)
 import Helpers.Decode exposing (..)
 import ISO8601 exposing (Time)
+import Id exposing (Id)
 import Json.Decode as Decode exposing (..)
 import Json.Decode.Pipeline exposing (..)
 
 
-
--- ID
-
-
-type ID
-    = ID String
-
-
-decodeID : Decoder ID
-decodeID =
-    string |> andThen (ID >> succeed)
-
-
-defaultBudgetID : ID
-defaultBudgetID =
-    ID "1b1f448f-8750-40a9-b744-f772f4898b91"
-
-
-idToString : ID -> String
-idToString (ID id) =
-    id
-
-
-idFromString : String -> ID
-idFromString s =
-    ID s
-
-
-
--- Budget Summary
+defaultBudgetId : Id
+defaultBudgetId =
+    Id.fromString "1b1f448f-8750-40a9-b744-f772f4898b91"
 
 
 type alias BudgetSummary =
-    { id : ID
+    { id : Id
     , name : String
     , lastModified : Time
     , firstMonth : Date
@@ -65,20 +35,16 @@ type alias BudgetSummary =
 decodeBudgetSummary : Decoder BudgetSummary
 decodeBudgetSummary =
     succeed BudgetSummary
-        |> required "id" decodeID
+        |> required "id" Id.decoder
         |> required "name" string
         |> required "last_modified_on" time
         |> required "first_month" date
         |> required "last_month" date
 
 
-type alias BudgetSummaries =
-    AnyDict String ID BudgetSummary
-
-
-decodeBudgetSummaries : Decoder BudgetSummaries
+decodeBudgetSummaries : Decoder (Db BudgetSummary)
 decodeBudgetSummaries =
-    succeed (dictByID idToString)
+    succeed dbById
         |> requiredAt [ "data", "budgets" ] (list decodeBudgetSummary)
 
 
@@ -87,10 +53,10 @@ decodeBudgetSummaries =
 
 
 type alias Budget =
-    { id : ID
+    { id : Id
     , name : String
     , lastModified : Time
-    , accounts : Accounts
+    , accounts : Db Account
 
     -- , payees : Payees
     -- , masterCategories : MasterCategories
@@ -103,17 +69,13 @@ type alias Budget =
     }
 
 
-type alias Budgets =
-    AnyDict String ID Budget
-
-
 decodeBudget : Decoder Budget
 decodeBudget =
     succeed Budget
-        |> required "id" decodeID
+        |> required "id" Id.decoder
         |> required "name" string
         |> required "last_modified_on" time
-        |> required "accounts" decodeAccounts
+        |> required "accounts" (listToDb Account.decoder)
 
 
 decodeBudgetResponse : Decoder Budget

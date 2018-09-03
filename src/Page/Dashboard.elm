@@ -9,23 +9,25 @@ module Page.Dashboard exposing
 
 import API
 import Context
-import Data.Budget as Budget exposing (Budget, Budgets)
+import Data.Budget as Budget exposing (Budget)
+import Db exposing (Db)
 import Dict.Any as AnyDict
 import Flags exposing (Flags)
 import Html exposing (..)
+import Id exposing (Id)
 import Return2 as R2
 import Return3 as R3 exposing (Return)
 
 
 type alias Model =
-    { budgetID : Maybe Budget.ID
+    { budgetId : Maybe Id
     , loading : Bool
     }
 
 
 initModel : Model
 initModel =
-    { budgetID = Nothing
+    { budgetId = Nothing
     , loading = False
     }
 
@@ -36,14 +38,14 @@ initCmd flags =
 
 
 type Msg
-    = Init Budget.ID
+    = Init Id
 
 
 update : Msg -> Model -> Context.Model -> Return Model Msg Context.Msg
 update msg model context =
     let
         loading =
-            case getBudget model.budgetID context.budgets of
+            case getBudget model.budgetId context.budgets of
                 Nothing ->
                     True
 
@@ -51,28 +53,27 @@ update msg model context =
                     False
     in
     case msg of
-        Init budgetID ->
+        Init budgetId ->
             if loading then
-                { model | budgetID = Just budgetID, loading = False }
+                { model | budgetId = Just budgetId, loading = False }
                     |> R3.withNothing
 
             else
-                { model | budgetID = Just budgetID, loading = True }
+                { model | budgetId = Just budgetId, loading = True }
                     |> R2.withNoCmd
-                    |> R3.withReply (Context.RequestBudget budgetID)
+                    |> R3.withReply (Context.RequestBudget budgetId)
 
 
-getBudget : Maybe Budget.ID -> Budgets -> Maybe Budget
-getBudget maybeID budgets =
-    maybeID
-        |> Maybe.andThen (\id -> AnyDict.get id budgets)
+getBudget : Maybe Id -> Db Budget -> Maybe Budget
+getBudget id budgets =
+    id |> Maybe.andThen (Db.get budgets)
 
 
 view : Context.Model -> Model -> Html Msg
 view context model =
     let
         maybeBudget =
-            getBudget model.budgetID context.budgets
+            getBudget model.budgetId context.budgets
     in
     case ( model.loading, maybeBudget ) of
         ( True, Nothing ) ->

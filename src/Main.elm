@@ -4,8 +4,6 @@ import API exposing (Token, fetchBudgetSummaries)
 import Browser
 import Browser.Navigation as Navigation
 import Context
-import Data.Account as Account exposing (Accounts)
-import Data.Budget as Budget exposing (BudgetSummaries, Budgets)
 import Dict.Any as AnyDict
 import Flags exposing (Flags)
 import Html exposing (Html)

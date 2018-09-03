@@ -1,11 +1,13 @@
-module API exposing (Token, fetchBudgetByID, fetchBudgetSummaries)
+module API exposing (Token, fetchBudgetById, fetchBudgetSummaries)
 
-import Data.Budget as Budget exposing (Budget, BudgetSummaries, BudgetSummary, decodeBudgetResponse, decodeBudgetSummaries, decodeBudgetSummary)
+import Data.Budget as Budget exposing (Budget, BudgetSummary, decodeBudgetResponse, decodeBudgetSummaries, decodeBudgetSummary)
 import Data.Money
 import Date exposing (Date)
+import Db exposing (Db)
 import Dict.Any as AnyDict
 import Http
 import ISO8601 exposing (Time)
+import Id exposing (Id)
 import Json.Decode as Decode exposing (..)
 import Json.Decode.Extra exposing (fromResult)
 import Json.Decode.Pipeline exposing (..)
@@ -32,13 +34,13 @@ ynabRequest token path decoder =
         }
 
 
-fetchBudgetSummaries : Token -> (Result Http.Error BudgetSummaries -> msg) -> Cmd msg
+fetchBudgetSummaries : Token -> (Result Http.Error (Db BudgetSummary) -> msg) -> Cmd msg
 fetchBudgetSummaries token msg =
     ynabRequest token "/budgets" decodeBudgetSummaries
         |> Http.send msg
 
 
-fetchBudgetByID : Token -> Budget.ID -> (Result Http.Error Budget -> msg) -> Cmd msg
-fetchBudgetByID token id msg =
-    ynabRequest token ("/budgets/" ++ Budget.idToString id) decodeBudgetResponse
+fetchBudgetById : Token -> Id -> (Result Http.Error Budget -> msg) -> Cmd msg
+fetchBudgetById token id msg =
+    ynabRequest token ("/budgets/" ++ Id.toString id) decodeBudgetResponse
         |> Http.send msg

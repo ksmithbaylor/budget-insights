@@ -10,7 +10,8 @@ module Page.BudgetSelector exposing
 import API exposing (fetchBudgetSummaries)
 import Context
 import CustomError
-import Data.Budget as Budget exposing (BudgetSummaries, BudgetSummary)
+import Data.Budget as Budget exposing (BudgetSummary)
+import Db exposing (Db)
 import Dict.Any as AnyDict
 import Flags exposing (Flags)
 import Html exposing (..)
@@ -18,24 +19,25 @@ import Html.Attributes exposing (..)
 import Html.Events exposing (..)
 import Http
 import ISO8601
+import Id exposing (Id)
 import Return2 as R2
 import Return3 as R3 exposing (Return)
 import Router
 
 
 type alias Model =
-    { budgetSummaries : Maybe BudgetSummaries
+    { budgetSummaries : Db BudgetSummary
     }
 
 
 type Msg
-    = GotBudgetSummaries (Result Http.Error BudgetSummaries)
-    | SelectedBudget Budget.ID
+    = GotBudgetSummaries (Result Http.Error (Db BudgetSummary))
+    | SelectedBudget Id
 
 
 initModel : Model
 initModel =
-    { budgetSummaries = Nothing }
+    { budgetSummaries = Db.empty }
 
 
 initCmd : Flags -> Cmd Msg
@@ -47,7 +49,7 @@ update : Msg -> Model -> Context.Model -> Return Model Msg Context.Msg
 update msg model context =
     case msg of
         GotBudgetSummaries (Ok budgetSummaries) ->
-            { model | budgetSummaries = Just budgetSummaries }
+            { model | budgetSummaries = budgetSummaries }
                 |> R2.withNoCmd
                 |> R3.withNoReply
 
@@ -65,18 +67,14 @@ view : Context.Model -> Model -> Html Msg
 view context model =
     let
         contents =
-            case model.budgetSummaries of
-                Nothing ->
-                    div [] [ text "Loading budgets..." ]
-
-                Just budgetSummaries ->
-                    div [ class "flow" ]
-                        (budgetSummaries
-                            |> AnyDict.values
-                            |> List.sortBy (.lastModified >> ISO8601.toString)
-                            |> List.reverse
-                            |> List.map viewBudget
-                        )
+            div [ class "flow" ]
+                (model.budgetSummaries
+                    |> Db.toList
+                    |> List.map Tuple.second
+                    |> List.sortBy (.lastModified >> ISO8601.toString)
+                    |> List.reverse
+                    |> List.map viewBudget
+                )
     in
     div [ class "budget-list" ]
         [ h1 [] [ text "Available Budgets" ]
@@ -86,7 +84,7 @@ view context model =
 
 viewBudget : BudgetSummary -> Html Msg
 viewBudget budget =
-    a [ class "budget shadow-box", href ("/budgets/" ++ Budget.idToString budget.id) ]
+    a [ class "budget shadow-box", href ("/budgets/" ++ Id.toString budget.id) ]
         [ div [ class "budget-name" ] [ text budget.name ]
         , div []
             [ span [] [ text "Last Modified: " ]
