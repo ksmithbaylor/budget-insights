@@ -9,10 +9,14 @@ module Page.BudgetSelector exposing
 
 import API exposing (fetchBudgetSummaries)
 import Context
-import Data.Budget exposing (BudgetSummaries)
+import Data.Budget as Budget exposing (BudgetSummaries, BudgetSummary)
+import Dict.Any as AnyDict
 import Flags exposing (Flags)
 import Html exposing (..)
+import Html.Attributes exposing (..)
+import Html.Events exposing (..)
 import Http
+import ISO8601
 import Return2 as R2
 import Return3 as R3 exposing (Return)
 
@@ -24,6 +28,7 @@ type alias Model =
 
 type Msg
     = GotBudgetSummaries (Result Http.Error BudgetSummaries)
+    | SelectedBudget Budget.ID
 
 
 initModel : Model
@@ -49,7 +54,47 @@ update msg model =
                 |> R2.withNoCmd
                 |> R3.withReply (Context.FetchError error)
 
+        SelectedBudget id ->
+            model
+                |> R3.withNothing
+
 
 view : Context.Model -> Model -> Html Msg
 view context model =
-    div [] [ text "budget selector" ]
+    let
+        contents =
+            case model.budgetSummaries of
+                Nothing ->
+                    div [] [ text "Loading budgets..." ]
+
+                Just budgetSummaries ->
+                    div [ class "flow" ]
+                        (budgetSummaries
+                            |> AnyDict.values
+                            |> List.sortBy (.lastModified >> ISO8601.toString)
+                            |> List.reverse
+                            |> List.map viewBudget
+                        )
+    in
+    div [ class "budget-list" ]
+        [ h1 [] [ text "Available Budgets" ]
+        , contents
+        ]
+
+
+viewBudget : BudgetSummary -> Html Msg
+viewBudget budget =
+    div [ class "budget shadow-box", onClick (SelectedBudget budget.id) ]
+        [ div [ class "budget-name" ] [ text budget.name ]
+        , div []
+            [ span [] [ text "Last Modified: " ]
+            , span [ class "light" ]
+                [ text <|
+                    (ISO8601.toString budget.lastModified
+                        |> String.split "T"
+                        |> List.head
+                        |> Maybe.withDefault ""
+                    )
+                ]
+            ]
+        ]
