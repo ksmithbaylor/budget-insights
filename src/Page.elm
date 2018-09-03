@@ -45,21 +45,17 @@ type Msg
 
 init : Flags -> Url -> Navigation.Key -> ( Model, Cmd Msg )
 init flags url key =
-    let
-        initialPage =
-            BudgetSelector
-
-        initialCmd =
-            BudgetSelector.initCmd flags
-                |> Cmd.map BudgetSelectorMsg
-    in
-    { currentPage = initialPage
+    { currentPage = BudgetSelector
     , key = key
     , budgetSelector = BudgetSelector.initModel
     , dashboard = Dashboard.initModel
     , somethingWentWrong = SomethingWentWrong.initModel
     }
-        |> R2.withCmd initialCmd
+        |> R2.withCmds
+            [ BudgetSelector.initCmd flags |> Cmd.map BudgetSelectorMsg
+            , Dashboard.initCmd flags |> Cmd.map DashboardMsg
+            , SomethingWentWrong.initCmd flags |> Cmd.map SomethingWentWrongMsg
+            ]
 
 
 update : Msg -> Model -> Return Model Msg Context.Msg
