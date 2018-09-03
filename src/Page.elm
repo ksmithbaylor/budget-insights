@@ -64,21 +64,21 @@ init flags url key =
             ]
 
 
-update : Msg -> Model -> Return Model Msg Context.Msg
-update msg model =
+update : Msg -> Model -> Context.Model -> Return Model Msg Context.Msg
+update msg model context =
     case msg of
         BudgetSelectorMsg subMsg ->
-            BudgetSelector.update subMsg model.budgetSelector
+            BudgetSelector.update subMsg model.budgetSelector context
                 |> R3.mapModel (\subModel -> { model | budgetSelector = subModel })
                 |> R3.mapCmd BudgetSelectorMsg
 
         DashboardMsg subMsg ->
-            Dashboard.update subMsg model.dashboard
+            Dashboard.update subMsg model.dashboard context
                 |> R3.mapModel (\subModel -> { model | dashboard = subModel })
                 |> R3.mapCmd DashboardMsg
 
         SomethingWentWrongMsg subMsg ->
-            SomethingWentWrong.update subMsg model.somethingWentWrong
+            SomethingWentWrong.update subMsg model.somethingWentWrong context
                 |> R3.mapModel (\subModel -> { model | somethingWentWrong = subModel })
                 |> R3.mapCmd SomethingWentWrongMsg
 
@@ -97,8 +97,22 @@ update msg model =
         UrlChanged url ->
             case Router.fromUrl url of
                 Ok route ->
-                    { model | route = route }
-                        |> R3.withNothing
+                    let
+                        newModel =
+                            { model | route = route }
+                    in
+                    case route of
+                        Router.BudgetSelector ->
+                            newModel
+                                |> R3.withNothing
+
+                        Router.Dashboard budgetID ->
+                            update (DashboardMsg <| Dashboard.Init budgetID) model context
+                                |> R3.mapModel (\updatedModel -> { updatedModel | route = route })
+
+                        Router.Oops ->
+                            newModel
+                                |> R3.withNothing
 
                 Err message ->
                     { model | route = Router.Oops }

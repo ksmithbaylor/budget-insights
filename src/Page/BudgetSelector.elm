@@ -20,6 +20,7 @@ import Http
 import ISO8601
 import Return2 as R2
 import Return3 as R3 exposing (Return)
+import Router
 
 
 type alias Model =
@@ -42,8 +43,8 @@ initCmd flags =
     fetchBudgetSummaries flags.token GotBudgetSummaries
 
 
-update : Msg -> Model -> Return Model Msg Context.Msg
-update msg model =
+update : Msg -> Model -> Context.Model -> Return Model Msg Context.Msg
+update msg model context =
     case msg of
         GotBudgetSummaries (Ok budgetSummaries) ->
             { model | budgetSummaries = Just budgetSummaries }

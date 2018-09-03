@@ -25,8 +25,9 @@ type alias Model =
 
 
 type Msg
-    = GotBudget (Result Http.Error Budget)
-    | ErrorHappened CustomError
+    = ErrorHappened CustomError
+    | RequestBudget Budget.ID
+    | GotBudget (Result Http.Error Budget)
 
 
 init : Flags -> ( Model, Cmd Msg )
@@ -44,6 +45,14 @@ update msg model =
     case msg of
         ErrorHappened error ->
             { model | error = Just error }
+                |> R2.withNoCmd
+
+        RequestBudget id ->
+            model
+                |> R2.withCmd (API.fetchBudgetByID model.token id GotBudget)
+
+        GotBudget (Ok budget) ->
+            { model | budgets = AnyDict.insert budget.id budget model.budgets }
                 |> R2.withNoCmd
 
         _ ->

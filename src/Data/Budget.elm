@@ -14,7 +14,7 @@ module Data.Budget exposing
 
 import Data.Account as Account exposing (Accounts, decodeAccounts)
 import Date exposing (Date)
-import Dict.Any exposing (AnyDict)
+import Dict.Any as AnyDict exposing (AnyDict)
 import Helpers.Decode exposing (..)
 import ISO8601 exposing (Time)
 import Json.Decode as Decode exposing (..)

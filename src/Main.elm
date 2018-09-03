@@ -73,7 +73,7 @@ update msg model =
                 |> R2.withCmds [ cmd, contextCmd ]
 
         PageMsg pageMsg ->
-            Page.update pageMsg pageModel
+            Page.update pageMsg pageModel contextModel
                 |> R3.mapCmd PageMsg
                 |> R3.incorp handlePageReply model
 

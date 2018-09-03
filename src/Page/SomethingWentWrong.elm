@@ -15,6 +15,7 @@ import Html.Attributes exposing (..)
 import Html.Events exposing (..)
 import Http
 import Return3 as R3 exposing (Return)
+import Router
 
 
 type alias Model =
@@ -35,8 +36,8 @@ type alias Msg =
     ()
 
 
-update : Msg -> Model -> Return Model Msg Context.Msg
-update msg model =
+update : Msg -> Model -> Context.Model -> Return Model Msg Context.Msg
+update msg model context =
     model |> R3.withNothing
 
 
