@@ -1,115 +1,37 @@
 module Main exposing (main)
 
-import API exposing (Token, fetchBudgetSummaries)
 import Browser
 import Browser.Navigation as Navigation
-import Context
-import Dict.Any as AnyDict
 import Flags exposing (Flags)
 import Html exposing (Html)
-import Page
-import Return2 as R2
-import Return3 as R3
-import Task.Extra exposing (message)
+import Model exposing (Model)
+import Msg exposing (Msg)
+import Router
+import Update
 import Url exposing (Url)
+import View
 
 
-main : Program Flags Model Msg
 main =
     Browser.application
         { init = init
-        , view = view
-        , update = update
+        , view = View.view
+        , update = Update.update
         , subscriptions = subscriptions
-        , onUrlRequest = Page.NavigateTo >> PageMsg
-        , onUrlChange = Page.UrlChanged >> PageMsg
+        , onUrlRequest = Msg.UrlRequested
+        , onUrlChange = onUrlChange
         }
-
-
-type alias Model =
-    ( Context.Model, Page.Model )
-
-
-type Msg
-    = ContextMsg Context.Msg
-    | PageMsg Page.Msg
 
 
 init : Flags -> Url -> Navigation.Key -> ( Model, Cmd Msg )
 init flags url key =
-    let
-        ( contextModel, contextCmd ) =
-            Context.init flags
-
-        ( pageModel, pageCmd ) =
-            Page.init flags url key
-    in
-    ( ( contextModel
-      , pageModel
-      )
-    , combineCmds contextCmd pageCmd
-    )
+    Model.init flags key
+        |> Update.update (onUrlChange url)
 
 
-update : Msg -> Model -> ( Model, Cmd Msg )
-update msg model =
-    let
-        ( contextModel, pageModel ) =
-            model
-    in
-    case msg of
-        ContextMsg contextMsg ->
-            let
-                ( newContextModel, contextCmd ) =
-                    Context.update contextMsg contextModel
-                        |> R2.mapCmd ContextMsg
-
-                ( ( _, newPageModel ), cmd ) =
-                    update (contextMsg |> Page.ContextMsg |> PageMsg) model
-            in
-            ( newContextModel, newPageModel )
-                |> R2.withCmds [ cmd, contextCmd ]
-
-        PageMsg pageMsg ->
-            Page.update pageMsg pageModel contextModel
-                |> R3.mapCmd PageMsg
-                |> R3.incorp handlePageReply model
-
-
-handlePageReply : Page.Model -> Maybe Context.Msg -> Model -> ( Model, Cmd Msg )
-handlePageReply pageModel maybeReply model =
-    let
-        newModel =
-            model
-                |> Tuple.mapSecond (always pageModel)
-    in
-    case maybeReply of
-        Nothing ->
-            newModel
-                |> R2.withNoCmd
-
-        Just contextMsg ->
-            newModel
-                |> R2.withCmd (message contextMsg)
-                |> R2.mapCmd ContextMsg
-
-
-combineCmds : Cmd Context.Msg -> Cmd Page.Msg -> Cmd Msg
-combineCmds contextCmd pageCmd =
-    Cmd.batch
-        [ Cmd.map ContextMsg contextCmd
-        , Cmd.map PageMsg pageCmd
-        ]
-
-
-view : Model -> Browser.Document Msg
-view ( context, page ) =
-    { title = "Budget Insights"
-    , body =
-        [ Page.view context page
-            |> Html.map PageMsg
-        ]
-    }
+onUrlChange : Url -> Msg
+onUrlChange =
+    Router.fromUrl >> Msg.RouteChanged
 
 
 subscriptions : Model -> Sub Msg

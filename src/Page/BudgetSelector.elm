@@ -1,16 +1,9 @@
-module Page.BudgetSelector exposing
-    ( Model
-    , Msg
-    , initCmd
-    , initModel
-    , update
-    , view
-    )
+module Page.BudgetSelector exposing (Model, Msg, Reply(..), init, update, view)
 
 import API exposing (fetchBudgetSummaries)
-import Context
 import CustomError
 import Data.Budget as Budget exposing (BudgetSummary)
+import Data.Context exposing (Context)
 import Db exposing (Db)
 import Dict.Any as AnyDict
 import Flags exposing (Flags)
@@ -21,54 +14,45 @@ import Http
 import ISO8601
 import Id exposing (Id)
 import Return2 as R2
-import Return3 as R3 exposing (Return)
-import Router
+import Return3 as R3 exposing (Return, reply)
 
 
 type alias Model =
-    { budgetSummaries : Db BudgetSummary
-    }
+    ()
 
 
 type Msg
-    = GotBudgetSummaries (Result Http.Error (Db BudgetSummary))
-    | SelectedBudget Id
+    = BudgetClicked Id
 
 
-initModel : Model
-initModel =
-    { budgetSummaries = Db.empty }
+type Reply
+    = SelectedBudget Id
 
 
-initCmd : Flags -> Cmd Msg
-initCmd flags =
-    fetchBudgetSummaries flags.token GotBudgetSummaries
+type alias Props =
+    ()
 
 
-update : Msg -> Model -> Context.Model -> Return Model Msg Context.Msg
-update msg model context =
+init : Props -> Model
+init props =
+    ()
+
+
+update : Context -> Msg -> Model -> Return Model Msg Reply
+update context msg model =
     case msg of
-        GotBudgetSummaries (Ok budgetSummaries) ->
-            { model | budgetSummaries = budgetSummaries }
-                |> R2.withNoCmd
-                |> R3.withNoReply
-
-        GotBudgetSummaries (Err error) ->
+        BudgetClicked id ->
             model
                 |> R2.withNoCmd
-                |> R3.withReply (Context.ErrorHappened <| CustomError.FetchError error)
-
-        SelectedBudget id ->
-            model
-                |> R3.withNothing
+                |> R3.withReply (SelectedBudget id)
 
 
-view : Context.Model -> Model -> Html Msg
+view : Context -> Model -> Html Msg
 view context model =
     let
         contents =
             div [ class "flow" ]
-                (model.budgetSummaries
+                (context.budgetSummaries
                     |> Db.toList
                     |> List.map Tuple.second
                     |> List.sortBy (.lastModified >> ISO8601.toString)
@@ -84,7 +68,8 @@ view context model =
 
 viewBudget : BudgetSummary -> Html Msg
 viewBudget budget =
-    a [ class "budget shadow-box", href ("/budgets/" ++ Id.toString budget.id) ]
+    -- a [ class "budget shadow-box", href ("/budgets/" ++ Id.toString budget.id) ]
+    div [ class "budget shadow-box", onClick (BudgetClicked budget.id) ]
         [ div [ class "budget-name" ] [ text budget.name ]
         , div []
             [ span [] [ text "Last Modified: " ]

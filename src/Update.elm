@@ -1,79 +1,122 @@
-module Update exposing (init, update)
+module Update exposing (update)
 
-import API exposing (Token, fetchBudgetById, fetchBudgetSummaries)
-import Browser.Navigation as Navigation
-import Cmd.Extra exposing (..)
-import Data.Budget as Budget exposing (Budget, BudgetSummaries, BudgetSummary)
-import Dict.Any as AnyDict
-import Flags exposing (Flags)
-import Http
-import Json.Decode
-import Model exposing (Model(..), initialModel)
-import Model.SomethingWentWrong
+import API
+import Data.Context as Context
+import Model exposing (Model)
 import Msg exposing (Msg(..))
-import Url exposing (Url)
-
-
-init : Flags -> Url -> Navigation.Key -> ( Model, Cmd Msg )
-init flags url key =
-    ( initialModel flags, initialCmd flags )
-
-
-initialCmd : Flags -> Cmd Msg
-initialCmd flags =
-    fetchBudgetSummaries flags.token GotBudgetSummaries
+import Page.BudgetSelector as BudgetSelector
+import Page.Dashboard as Dashboard
+import Page2 as Page
+import Platform exposing (Router)
+import Return2 as R2
+import Return3 as R3
+import Router exposing (Route)
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
-update msg model =
-    case ( model, msg ) of
-        -- Have a token, now fetching the list of budgets
-        ( Initializing { token, lastBudgetId }, GotBudgetSummaries (Ok budgetSummaries) ) ->
-            case lastBudgetId |> Maybe.andThen (\id -> AnyDict.get id budgetSummaries) of
-                Nothing ->
-                    PickingBudget { budgetSummaries = budgetSummaries, token = token }
-                        |> withNoCmd
+update msg (( context, page ) as model) =
+    let
+        noChange =
+            model |> R2.withNoCmd
+    in
+    case msg of
+        RouteChanged (Ok route) ->
+            model |> handleRoute route
 
-                Just budget ->
-                    Dashboard { budgetSummaries = budgetSummaries, budgetSummary = budget, token = token, loading = True }
-                        |> withCmd (fetchBudgetById token budget.id GotBudget)
+        RouteChanged (Err url) ->
+            noChange
 
-        -- Budget picking screen
-        ( PickingBudget { token }, GotBudgetSummaries (Ok budgetSummaries) ) ->
-            PickingBudget { budgetSummaries = budgetSummaries, token = token }
-                |> withNoCmd
+        UrlRequested urlRequest ->
+            noChange
 
-        ( PickingBudget { budgetSummaries, token }, SelectedBudget budget ) ->
-            Dashboard { budgetSummaries = budgetSummaries, budgetSummary = budget, token = token, loading = True }
-                |> withCmd (fetchBudgetById token budget.id GotBudget)
+        BudgetSelectorMsg subMsg ->
+            case page of
+                Page.BudgetSelector subModel ->
+                    subModel
+                        |> BudgetSelector.update context subMsg
+                        |> R3.mapCmd BudgetSelectorMsg
+                        |> R3.incorp handleBudgetSelectorReply model
 
-        -- On the dashboard
-        ( Dashboard { budgetSummaries, token }, GoBack ) ->
-            PickingBudget { budgetSummaries = budgetSummaries, token = token }
-                |> withNoCmd
+                _ ->
+                    noChange
 
-        ( Dashboard { budgetSummary, token }, GotBudgetSummaries (Ok budgetSummaries) ) ->
-            case AnyDict.get budgetSummary.id budgetSummaries of
-                Just foundBudget ->
-                    Dashboard { budgetSummaries = budgetSummaries, budgetSummary = foundBudget, token = token, loading = False }
-                        |> withNoCmd
+        DashboardMsg subMsg ->
+            case page of
+                Page.Dashboard subModel ->
+                    subModel
+                        |> Dashboard.update context subMsg
+                        |> R3.mapCmd DashboardMsg
+                        |> R3.incorp handleDashboardReply model
 
-                Nothing ->
-                    PickingBudget { budgetSummaries = budgetSummaries, token = token }
-                        |> withNoCmd
+                _ ->
+                    noChange
 
-        ( Dashboard dashboardModel, GotBudget (Ok budget) ) ->
-            Dashboard { dashboardModel | loading = False } |> withNoCmd
+        GotBudget (Ok budget) ->
+            -- TODO
+            noChange
 
-        -- Error handling
-        ( _, GotBudgetSummaries (Err error) ) ->
-            SomethingWentWrong { error = Model.SomethingWentWrong.FetchError error }
-                |> withNoCmd
+        GotBudget (Err error) ->
+            -- TODO
+            noChange
 
-        ( _, GotBudget (Err error) ) ->
-            SomethingWentWrong { error = Model.SomethingWentWrong.FetchError error }
-                |> withNoCmd
+        GotBudgetSummaries (Ok budgetSummaries) ->
+            model
+                |> Model.mapContext (Context.setBudgetSummaries budgetSummaries)
+                |> R2.withNoCmd
 
-        -- Ignore any unexpected messages sent to the wrong page
-        ( _, _ ) ->
-            model |> withNoCmd
+        GotBudgetSummaries (Err error) ->
+            -- TODO
+            noChange
+
+
+handleBudgetSelectorReply : BudgetSelector.Model -> Maybe BudgetSelector.Reply -> Model -> ( Model, Cmd Msg )
+handleBudgetSelectorReply subModel maybeReply (( context, page ) as model) =
+    let
+        result =
+            Page.BudgetSelector subModel
+                |> Model.setPage model
+                |> R2.withNoCmd
+    in
+    case maybeReply of
+        Nothing ->
+            result
+
+        Just (BudgetSelector.SelectedBudget id) ->
+            Page.Dashboard { budgetId = id }
+                |> Model.setPage model
+                |> R2.withNoCmd
+
+
+handleDashboardReply : Dashboard.Model -> Maybe Dashboard.Reply -> Model -> ( Model, Cmd Msg )
+handleDashboardReply subModel maybeReply (( context, page ) as model) =
+    let
+        result =
+            Page.Dashboard subModel
+                |> Model.setPage model
+                |> R2.withNoCmd
+    in
+    case maybeReply of
+        Nothing ->
+            result
+
+        Just () ->
+            result
+
+
+handleRoute : Route -> Model -> ( Model, Cmd Msg )
+handleRoute route (( context, page ) as model) =
+    case route of
+        Router.BudgetSelector ->
+            Page.BudgetSelector (BudgetSelector.init ())
+                |> Model.setPage model
+                |> R2.withCmd (API.fetchBudgetSummaries context.token GotBudgetSummaries)
+
+        Router.Dashboard budgetId ->
+            Page.Dashboard (Dashboard.init { budgetId = budgetId })
+                |> Model.setPage model
+                |> R2.withCmd (API.fetchBudgetById context.token budgetId GotBudget)
+
+        Router.Oops ->
+            Page.Error
+                |> Model.setPage model
+                |> R2.withNoCmd

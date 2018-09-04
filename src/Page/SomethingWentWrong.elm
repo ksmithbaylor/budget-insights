@@ -1,63 +1,8 @@
-module Page.SomethingWentWrong exposing
-    ( Model
-    , Msg
-    , initCmd
-    , initModel
-    , update
-    , view
-    )
+module Page.SomethingWentWrong exposing (view)
 
-import Context
-import CustomError exposing (CustomError(..))
-import Flags exposing (Flags)
 import Html exposing (..)
-import Html.Attributes exposing (..)
-import Html.Events exposing (..)
-import Http
-import Return3 as R3 exposing (Return)
-import Router
 
 
-type alias Model =
-    ()
-
-
-initModel : Model
-initModel =
-    ()
-
-
-initCmd : Flags -> Cmd Msg
-initCmd flags =
-    Cmd.none
-
-
-type alias Msg =
-    ()
-
-
-update : Msg -> Model -> Context.Model -> Return Model Msg Context.Msg
-update msg model context =
-    model |> R3.withNothing
-
-
-view : Context.Model -> Model -> Html Msg
-view context model =
-    case context.error of
-        Nothing ->
-            div []
-                [ div [] [ text "Nothing appears to be wrong!" ]
-                , a [ href "/" ] [ text "Go home" ]
-                ]
-
-        Just error ->
-            let
-                errorMessage =
-                    case error of
-                        FetchError httpError ->
-                            "network error"
-
-                        LogicError message ->
-                            message
-            in
-            div [] [ text errorMessage ]
+view : Html msg
+view =
+    div [] [ text "Error!" ]
