@@ -1,6 +1,5 @@
 module Page.BudgetSelector exposing (Model, Msg, Reply(..), init, update, view)
 
-import CustomError
 import Data.Budget as Budget exposing (BudgetSummary)
 import Data.Context exposing (Context)
 import Db exposing (Db)

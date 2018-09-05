@@ -33,7 +33,7 @@ viewPage ( context, page ) =
                         |> Html.map DashboardMsg
 
                 Page.Error ->
-                    SomethingWentWrong.view
+                    SomethingWentWrong.view context
 
                 Page.Blank ->
                     div [] []

@@ -2,7 +2,11 @@ module Update exposing (update)
 
 import API
 import Browser
+import Browser.Navigation as Navigation
 import Data.Context as Context
+import Data.CustomError exposing (..)
+import Http
+import Json.Decode exposing (errorToString)
 import Model exposing (Model)
 import Msg exposing (Msg(..))
 import Page
@@ -37,8 +41,7 @@ update msg (( context, page ) as model) =
                     model |> handleRoutingError error
 
         UrlRequested (Browser.External urlString) ->
-            -- TODO: allow external links
-            noChange
+            model |> R2.withCmd (Navigation.load urlString)
 
         BudgetSelectorMsg subMsg ->
             case page of
@@ -68,8 +71,7 @@ update msg (( context, page ) as model) =
                 |> R2.withNoCmd
 
         GotBudget (Err error) ->
-            -- TODO
-            noChange
+            handleHttpError error model
 
         GotBudgetSummaries (Ok budgetSummaries) ->
             model
@@ -77,8 +79,7 @@ update msg (( context, page ) as model) =
                 |> R2.withNoCmd
 
         GotBudgetSummaries (Err error) ->
-            -- TODO
-            noChange
+            handleHttpError error model
 
 
 handleBudgetSelectorReply : BudgetSelector.Model -> Maybe BudgetSelector.Reply -> Model -> ( Model, Cmd Msg )
@@ -145,6 +146,14 @@ handleRoute route (( context, page ) as model) =
 
 
 handleRoutingError : String -> Model -> ( Model, Cmd Msg )
-handleRoutingError error (( context, _ ) as model) =
-    -- TODO add error here to show message
-    model |> R2.withCmd (Router.goTo context Router.Oops)
+handleRoutingError url (( context, _ ) as model) =
+    model
+        |> Model.mapContext (Context.setError (RoutingError url))
+        |> R2.withCmd (Router.goTo context Router.Oops)
+
+
+handleHttpError : Http.Error -> Model -> ( Model, Cmd Msg )
+handleHttpError error (( context, _ ) as model) =
+    model
+        |> Model.mapContext (Context.setError (FetchingError error))
+        |> R2.withCmd (Router.goTo context Router.Oops)
