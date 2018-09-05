@@ -81,4 +81,4 @@ viewMain context model =
                 [ text "Loading..." ]
 
             Just budget ->
-                [ text <| Debug.toString budget ]
+                [ text "Budget loaded!" ]
