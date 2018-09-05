@@ -86,6 +86,10 @@ handleBudgetSelectorReply subModel maybeReply (( context, page ) as model) =
                 |> Model.setPage model
                 |> R2.withNoCmd
 
+        Just BudgetSelector.RequestedBudgetSummaries ->
+            result
+                |> R2.addCmd (API.fetchBudgetSummaries context.token GotBudgetSummaries)
+
 
 handleDashboardReply : Dashboard.Model -> Maybe Dashboard.Reply -> Model -> ( Model, Cmd Msg )
 handleDashboardReply subModel maybeReply (( context, page ) as model) =
@@ -107,9 +111,9 @@ handleRoute : Route -> Model -> ( Model, Cmd Msg )
 handleRoute route (( context, page ) as model) =
     case route of
         Router.BudgetSelector ->
-            Page.BudgetSelector (BudgetSelector.init ())
-                |> Model.setPage model
-                |> R2.withCmd (API.fetchBudgetSummaries context.token GotBudgetSummaries)
+            BudgetSelector.init () context
+                |> R3.mapCmd BudgetSelectorMsg
+                |> R3.incorp handleBudgetSelectorReply model
 
         Router.Dashboard budgetId ->
             Page.Dashboard (Dashboard.init { budgetId = budgetId })

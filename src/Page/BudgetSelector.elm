@@ -1,6 +1,5 @@
 module Page.BudgetSelector exposing (Model, Msg, Reply(..), init, update, view)
 
-import API exposing (fetchBudgetSummaries)
 import CustomError
 import Data.Budget as Budget exposing (BudgetSummary)
 import Data.Context exposing (Context)
@@ -27,15 +26,18 @@ type Msg
 
 type Reply
     = SelectedBudget Id
+    | RequestedBudgetSummaries
 
 
 type alias Props =
     ()
 
 
-init : Props -> Model
-init props =
+init : Props -> Context -> Return Model Msg Reply
+init props context =
     ()
+        |> R2.withNoCmd
+        |> R3.withReply RequestedBudgetSummaries
 
 
 update : Context -> Msg -> Model -> Return Model Msg Reply
