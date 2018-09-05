@@ -1,4 +1,4 @@
-module Router exposing (Route(..), fromUrl)
+module Router exposing (Route(..), fromUrl, goTo)
 
 import Browser.Navigation as Navigation
 import Data.Budget as Budget

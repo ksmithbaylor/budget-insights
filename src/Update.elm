@@ -1,6 +1,7 @@
 module Update exposing (update)
 
 import API
+import Browser
 import Data.Context as Context
 import Model exposing (Model)
 import Msg exposing (Msg(..))
@@ -11,6 +12,7 @@ import Platform exposing (Router)
 import Return2 as R2
 import Return3 as R3
 import Router exposing (Route)
+import Url exposing (Url)
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -23,10 +25,19 @@ update msg (( context, page ) as model) =
         RouteChanged (Ok route) ->
             model |> handleRoute route
 
-        RouteChanged (Err url) ->
-            noChange
+        RouteChanged (Err error) ->
+            model |> handleRoutingError error
 
-        UrlRequested urlRequest ->
+        UrlRequested (Browser.Internal url) ->
+            case Router.fromUrl url of
+                Ok route ->
+                    model |> R2.withCmd (Router.goTo context route)
+
+                Err error ->
+                    model |> handleRoutingError error
+
+        UrlRequested (Browser.External urlString) ->
+            -- TODO: allow external links
             noChange
 
         BudgetSelectorMsg subMsg ->
@@ -83,7 +94,8 @@ handleBudgetSelectorReply subModel maybeReply (( context, page ) as model) =
             result
 
         Just (BudgetSelector.SelectedBudget id) ->
-            handleRoute (Router.Dashboard id) model
+            result
+                |> R2.addCmd (Router.goTo context (Router.Dashboard id))
 
         Just BudgetSelector.RequestedBudgetSummaries ->
             result
@@ -107,7 +119,8 @@ handleDashboardReply subModel maybeReply (( context, page ) as model) =
                 |> R2.addCmd (API.fetchBudgetById context.token budgetId GotBudget)
 
         Just Dashboard.GoToBudgetSelector ->
-            handleRoute Router.BudgetSelector model
+            result
+                |> R2.addCmd (Router.goTo context Router.BudgetSelector)
 
 
 handleRoute : Route -> Model -> ( Model, Cmd Msg )
@@ -129,3 +142,9 @@ handleRoute route (( context, page ) as model) =
             Page.Error
                 |> Model.setPage model
                 |> R2.withNoCmd
+
+
+handleRoutingError : String -> Model -> ( Model, Cmd Msg )
+handleRoutingError error (( context, _ ) as model) =
+    -- TODO add error here to show message
+    model |> R2.withCmd (Router.goTo context Router.Oops)
