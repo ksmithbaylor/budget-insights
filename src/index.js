@@ -1,7 +1,7 @@
 import './main.css';
 import {Elm} from './Main.elm';
 import registerServiceWorker from './registerServiceWorker';
-import env from '../.env';
+const env = require('../.env');
 
 const token = atob(env.slice(13))
   .split('\n')
