@@ -52,8 +52,9 @@ update msg (( context, page ) as model) =
                     noChange
 
         GotBudget (Ok budget) ->
-            -- TODO
-            noChange
+            model
+                |> Model.mapContext (Context.insertBudget budget)
+                |> R2.withNoCmd
 
         GotBudget (Err error) ->
             -- TODO
@@ -82,9 +83,7 @@ handleBudgetSelectorReply subModel maybeReply (( context, page ) as model) =
             result
 
         Just (BudgetSelector.SelectedBudget id) ->
-            Page.Dashboard { budgetId = id }
-                |> Model.setPage model
-                |> R2.withNoCmd
+            handleRoute (Router.Dashboard id) model
 
         Just BudgetSelector.RequestedBudgetSummaries ->
             result
@@ -103,22 +102,25 @@ handleDashboardReply subModel maybeReply (( context, page ) as model) =
         Nothing ->
             result
 
-        Just () ->
+        Just (Dashboard.RequestedBudget budgetId) ->
             result
+                |> R2.addCmd (API.fetchBudgetById context.token budgetId GotBudget)
 
 
 handleRoute : Route -> Model -> ( Model, Cmd Msg )
 handleRoute route (( context, page ) as model) =
     case route of
         Router.BudgetSelector ->
-            BudgetSelector.init () context
+            ()
+                |> BudgetSelector.init context
                 |> R3.mapCmd BudgetSelectorMsg
                 |> R3.incorp handleBudgetSelectorReply model
 
         Router.Dashboard budgetId ->
-            Page.Dashboard (Dashboard.init { budgetId = budgetId })
-                |> Model.setPage model
-                |> R2.withCmd (API.fetchBudgetById context.token budgetId GotBudget)
+            { budgetId = budgetId }
+                |> Dashboard.init context
+                |> R3.mapCmd DashboardMsg
+                |> R3.incorp handleDashboardReply model
 
         Router.Oops ->
             Page.Error

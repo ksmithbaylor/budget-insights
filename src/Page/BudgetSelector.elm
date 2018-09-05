@@ -33,9 +33,9 @@ type alias Props =
     ()
 
 
-init : Props -> Context -> Return Model Msg Reply
-init props context =
-    ()
+init : Context -> Props -> Return Model Msg Reply
+init context props =
+    props
         |> R2.withNoCmd
         |> R3.withReply RequestedBudgetSummaries
 

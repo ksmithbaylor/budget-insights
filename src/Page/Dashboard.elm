@@ -1,8 +1,8 @@
-module Page.Dashboard exposing (Model, Msg, Reply, init, update, view)
+module Page.Dashboard exposing (Model, Msg, Reply(..), init, update, view)
 
 import API
 import Data.Budget as Budget exposing (Budget)
-import Data.Context exposing (Context)
+import Data.Context as Context exposing (Context)
 import Db exposing (Db)
 import Dict.Any as AnyDict
 import Flags exposing (Flags)
@@ -21,8 +21,8 @@ type Msg
     = NoOp
 
 
-type alias Reply =
-    ()
+type Reply
+    = RequestedBudget Id
 
 
 type alias Props =
@@ -30,10 +30,11 @@ type alias Props =
     }
 
 
-init : Props -> Model
-init props =
-    { budgetId = props.budgetId
-    }
+init : Context -> Props -> Return Model Msg Reply
+init context props =
+    props
+        |> R2.withNoCmd
+        |> R3.withReply (RequestedBudget props.budgetId)
 
 
 update : Context -> Msg -> Model -> Return Model Msg Reply
@@ -45,6 +46,10 @@ update context msg model =
 
 view : Context -> Model -> Html Msg
 view context model =
+    let
+        maybeBudget =
+            Context.getBudget model.budgetId context
+    in
     div []
-        [ text <| "Budget with id " ++ Id.toString model.budgetId
+        [ text <| Debug.toString maybeBudget
         ]
