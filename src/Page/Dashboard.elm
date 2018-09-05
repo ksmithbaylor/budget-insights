@@ -7,6 +7,8 @@ import Db exposing (Db)
 import Dict.Any as AnyDict
 import Flags exposing (Flags)
 import Html exposing (..)
+import Html.Attributes exposing (..)
+import Html.Events exposing (..)
 import Id exposing (Id)
 import Return2 as R2
 import Return3 as R3 exposing (Return)
@@ -18,11 +20,12 @@ type alias Model =
 
 
 type Msg
-    = NoOp
+    = BackButtonClicked
 
 
 type Reply
     = RequestedBudget Id
+    | GoToBudgetSelector
 
 
 type alias Props =
@@ -40,16 +43,42 @@ init context props =
 update : Context -> Msg -> Model -> Return Model Msg Reply
 update context msg model =
     case msg of
-        NoOp ->
-            model |> R3.withNothing
+        BackButtonClicked ->
+            model |> R2.withNoCmd |> R3.withReply GoToBudgetSelector
 
 
 view : Context -> Model -> Html Msg
 view context model =
+    div [ class "dashboard" ]
+        [ viewTopBar context model
+        , viewMain context model
+        ]
+
+
+viewTopBar : Context -> Model -> Html Msg
+viewTopBar context model =
+    let
+        budgetName =
+            Context.getBudgetSummary context model.budgetId
+                |> Maybe.map .name
+                |> Maybe.withDefault ""
+    in
+    div [ class "top-bar" ]
+        [ button [ class "back shadow-box", onClick BackButtonClicked ] [ text "⬅" ]
+        , span [ class "budget-name" ] [ text budgetName ]
+        ]
+
+
+viewMain : Context -> Model -> Html Msg
+viewMain context model =
     let
         maybeBudget =
-            Context.getBudget model.budgetId context
+            Context.getBudget context model.budgetId
     in
-    div []
-        [ text <| Debug.toString maybeBudget
-        ]
+    div [ class "main shadow-box no-hover" ] <|
+        case maybeBudget of
+            Nothing ->
+                [ text "Loading..." ]
+
+            Just budget ->
+                [ text <| Debug.toString budget ]

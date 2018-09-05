@@ -106,6 +106,9 @@ handleDashboardReply subModel maybeReply (( context, page ) as model) =
             result
                 |> R2.addCmd (API.fetchBudgetById context.token budgetId GotBudget)
 
+        Just Dashboard.GoToBudgetSelector ->
+            handleRoute Router.BudgetSelector model
+
 
 handleRoute : Route -> Model -> ( Model, Cmd Msg )
 handleRoute route (( context, page ) as model) =

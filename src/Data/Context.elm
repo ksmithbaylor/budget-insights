@@ -1,6 +1,7 @@
 module Data.Context exposing
     ( Context
     , getBudget
+    , getBudgetSummary
     , init
     , insertBudget
     , setBudgetSummaries
@@ -36,9 +37,14 @@ setBudgetSummaries budgetSummaries context =
     { context | budgetSummaries = budgetSummaries }
 
 
-getBudget : Id -> Context -> Maybe Budget
-getBudget id context =
-    Db.get context.budgets id
+getBudget : Context -> Id -> Maybe Budget
+getBudget context =
+    Db.get context.budgets
+
+
+getBudgetSummary : Context -> Id -> Maybe BudgetSummary
+getBudgetSummary context =
+    Db.get context.budgetSummaries
 
 
 insertBudget : Budget -> Context -> Context
