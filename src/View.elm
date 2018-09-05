@@ -4,10 +4,10 @@ import Browser
 import Html exposing (Html, div)
 import Model exposing (Model)
 import Msg exposing (Msg(..))
+import Page
 import Page.BudgetSelector as BudgetSelector
 import Page.Dashboard as Dashboard
 import Page.SomethingWentWrong as SomethingWentWrong
-import Page2 as Page
 
 
 view : Model -> Browser.Document Msg

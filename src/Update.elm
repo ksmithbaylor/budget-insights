@@ -5,9 +5,9 @@ import Browser
 import Data.Context as Context
 import Model exposing (Model)
 import Msg exposing (Msg(..))
+import Page
 import Page.BudgetSelector as BudgetSelector
 import Page.Dashboard as Dashboard
-import Page2 as Page
 import Platform exposing (Router)
 import Return2 as R2
 import Return3 as R3

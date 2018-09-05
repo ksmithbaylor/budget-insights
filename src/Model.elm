@@ -3,7 +3,7 @@ module Model exposing (Model, init, mapContext, setContext, setPage)
 import Browser.Navigation as Navigation
 import Data.Context as Context exposing (Context)
 import Flags exposing (Flags)
-import Page2 exposing (Page)
+import Page exposing (Page)
 
 
 type alias Model =
@@ -12,7 +12,7 @@ type alias Model =
 
 init : Flags -> Navigation.Key -> Model
 init flags key =
-    ( Context.init flags key, Page2.Blank )
+    ( Context.init flags key, Page.Blank )
 
 
 
