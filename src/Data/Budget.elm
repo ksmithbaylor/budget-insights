@@ -8,6 +8,7 @@ module Data.Budget exposing
     )
 
 import Data.Account as Account exposing (Account)
+import Data.Payee as Payee exposing (Payee)
 import Date exposing (Date)
 import Db exposing (Db)
 import Dict.Any as AnyDict exposing (AnyDict)
@@ -57,8 +58,8 @@ type alias Budget =
     , name : String
     , lastModified : Time
     , accounts : Db Account
+    , payees : Db Payee
 
-    -- , payees : Payees
     -- , masterCategories : MasterCategories
     -- , categories : Categories
     -- , months : Months
@@ -76,6 +77,7 @@ decodeBudget =
         |> required "name" string
         |> required "last_modified_on" time
         |> required "accounts" (listToDb Account.decoder)
+        |> required "payees" (listToDb Payee.decoder)
 
 
 decodeBudgetResponse : Decoder Budget

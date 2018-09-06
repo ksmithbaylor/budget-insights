@@ -1,11 +1,7 @@
-module Data.Account exposing
-    ( Account
-    , decoder
-    )
+module Data.Account exposing (Account, decoder)
 
 import Data.Money exposing (Money, decodeMoney)
 import Db exposing (Db)
-import Dict.Any as AnyDict exposing (AnyDict)
 import Helpers.Decode exposing (..)
 import Id exposing (Id)
 import Json.Decode exposing (..)

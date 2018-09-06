@@ -6,6 +6,7 @@ import Data.Context as Context exposing (Context)
 import Db exposing (Db)
 import Dict.Any as AnyDict
 import Flags exposing (Flags)
+import Helpers.PrintAny
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
@@ -81,4 +82,6 @@ viewMain context model =
                 [ text "Loading..." ]
 
             Just budget ->
-                [ text "Budget loaded!" ]
+                [ h2 [] [ text "Payees:" ]
+                , Helpers.PrintAny.view budget.payees
+                ]
