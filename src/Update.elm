@@ -90,39 +90,39 @@ update msg (( context, page ) as model) =
 handleBudgetSelectorReply : BudgetSelector.Model -> Maybe BudgetSelector.Reply -> Model -> ( Model, Cmd Msg )
 handleBudgetSelectorReply subModel maybeReply (( context, page ) as model) =
     let
-        result =
+        newModel =
             Page.BudgetSelector subModel
                 |> Model.setPage model
-                |> R2.withNoCmd
     in
     case maybeReply of
         Nothing ->
-            result
+            newModel
+                |> R2.withNoCmd
 
         Just (BudgetSelector.SelectedBudget id) ->
-            result
-                |> R2.addCmd (Router.goTo context (Router.Dashboard id))
+            newModel
+                |> R2.withCmd (Router.goTo context (Router.Dashboard id))
 
 
 handleDashboardReply : Dashboard.Model -> Maybe Dashboard.Reply -> Model -> ( Model, Cmd Msg )
 handleDashboardReply subModel maybeReply (( context, page ) as model) =
     let
-        result =
+        newModel =
             Page.Dashboard subModel
                 |> Model.setPage model
-                |> R2.withNoCmd
     in
     case maybeReply of
         Nothing ->
-            result
+            newModel
+                |> R2.withNoCmd
 
         Just (Dashboard.RequestedBudget budgetId) ->
-            result
-                |> R2.addCmd (API.fetchBudgetById context.token budgetId GotBudget)
+            newModel
+                |> R2.withCmd (API.fetchBudgetById context.token budgetId GotBudget)
 
         Just Dashboard.GoToBudgetSelector ->
-            result
-                |> R2.addCmd (Router.goTo context Router.BudgetSelector)
+            newModel
+                |> R2.withCmd (Router.goTo context Router.BudgetSelector)
 
 
 handleRoute : Route -> Model -> ( Model, Cmd Msg )
