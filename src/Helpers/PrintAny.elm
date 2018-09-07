@@ -5,12 +5,14 @@ module Helpers.PrintAny exposing
 
 {-| A tiny library for debugging purposes.
 It prints any record to the console or to the DOM.
+
 You can simply call `PrintAny.view myRecord` inside your `view` function,
 to print `myRecord` to the DOM.
+
 Or use `PrintAny.log myRecord` anywhere, to get a (somewhat) prettified version of the record in the console.
-_PS: You may not want to use this with large records.
-Performance is not optimal. This module iterates over a
-string version of the record, which may take long time._
+_PS: You may not want to use this with large records._
+_Performance is not optimal. This module iterates over a_
+_string version of the record, which may take long time._
 
 
 # Basics
@@ -58,15 +60,20 @@ type Config
 
 
 {-| Custom configuration of output to DOM.
+
 With the `viewWithConfig` function, you can configure
 
   - `Int` indentation in pixels of individual lines
   - `String` class name for rendering the `<pre>` wrapper
-    Usage:
-    `viewWithConfig (config 20 "debug-record") myRecord`
-    Prints `record` to the DOM with the wrapper provide with class "debug-record",
-    and each line indented with increments of 20px.
-    The classname allows you to style the wrapper as well as the children elements in css.
+
+Usage:
+
+`viewWithConfig (config 20 "debug-record") myRecord`
+
+Prints `record` to the DOM with the wrapper provide with class "debug-record",
+and each line indented with increments of 20px.
+
+The classname allows you to style the wrapper as well as the children elements in css.
 
 -}
 config : Int -> String -> Config
@@ -96,6 +103,7 @@ defaultConfig =
 
 
 {-| renders any record to the Dom.
+
 Usage:
 
 ```Elm
@@ -116,6 +124,7 @@ view record =
 
 
 {-| renders any record to the Dom, with custom configuration.
+
 Usage:
 
 ```Elm
@@ -132,7 +141,7 @@ view model =
 
 -}
 viewWithConfig : Config -> a -> Html msg
-viewWithConfig (Config con) record =
+viewWithConfig (Config conf) record =
     let
         lines =
             record
@@ -144,14 +153,14 @@ viewWithConfig (Config con) record =
                 |> addIndents
     in
     pre
-        (if con.className == "" then
+        (if conf.className == "" then
             []
 
          else
-            [ class con.className ]
+            [ class conf.className ]
         )
     <|
-        List.map (viewLine <| Config con) lines
+        List.map (viewLine <| Config conf) lines
 
 
 
@@ -159,16 +168,17 @@ viewWithConfig (Config con) record =
 
 
 viewLine : Config -> ( Int, String ) -> Html msg
-viewLine (Config con) ( indent, string ) =
+viewLine (Config conf) ( indent, string ) =
     p
-        [ style "paddingLeft" (px (indent * con.increment))
+        [ style "paddingLeft" (px (indent * conf.increment))
         , style "marginTop" "0px"
         , style "marginBottom" "0px"
         ]
-        [ text string ]
+        [ text <| String.join "\n" <| String.split "\\n" string ]
 
 
 {-| Prints a stylized version of any record to the DOM.
+
 So if you have:
 
 ```Elm
@@ -197,6 +207,7 @@ Then `PrintAny.log record` will log to the console:
 ```
 
 The function will output the original record passed, so you can do:
+
 `myNewRecord = PrintAny.log { record | item = somethingNew }`
 
 -}
