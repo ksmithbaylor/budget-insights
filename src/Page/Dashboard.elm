@@ -122,5 +122,5 @@ viewMain context model =
                 [ text "Loading..." ]
 
             Just budget ->
-                [ Helpers.PrintAny.view budget
+                [ text <| (++) "Months: " <| String.fromInt <| List.length <| Db.toList <| budget.months
                 ]
