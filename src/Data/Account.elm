@@ -16,7 +16,7 @@ import Json.Decode.Pipeline exposing (..)
 type alias Account =
     { id : Id
     , name : String
-    , kind : Type
+    , kind : AccountType
     , onBudget : Bool
     , closed : Bool
     , deleted : Bool
@@ -32,7 +32,7 @@ decoder =
     succeed Account
         |> required "id" Id.decoder
         |> required "name" string
-        |> required "type" decodeType
+        |> required "type" decodeAccountType
         |> required "on_budget" bool
         |> required "closed" bool
         |> required "deleted" bool
@@ -42,7 +42,7 @@ decoder =
         |> required "uncleared_balance" Money.decoder
 
 
-type Type
+type AccountType
     = Checking
     | Savings
     | Cash
@@ -56,13 +56,13 @@ type Type
     | Mortgage
 
 
-decodeType : Decoder Type
-decodeType =
-    string |> andThen (stringToType >> fromResult)
+decodeAccountType : Decoder AccountType
+decodeAccountType =
+    string |> andThen (stringToAccountType >> fromResult)
 
 
-stringToType : String -> Result String Type
-stringToType s =
+stringToAccountType : String -> Result String AccountType
+stringToAccountType s =
     case s of
         "checking" ->
             Ok Checking
