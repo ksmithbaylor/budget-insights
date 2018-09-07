@@ -36,9 +36,14 @@ type alias Props =
 
 init : Context -> Props -> Return Model Msg Reply
 init context props =
-    props
-        |> R2.withNoCmd
-        |> R3.withReply (RequestedBudget props.budgetId)
+    case Context.getBudget context props.budgetId of
+        Nothing ->
+            props
+                |> R2.withNoCmd
+                |> R3.withReply (RequestedBudget props.budgetId)
+
+        Just budget ->
+            props |> R3.withNothing
 
 
 update : Context -> Msg -> Model -> Return Model Msg Reply
