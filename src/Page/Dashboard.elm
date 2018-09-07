@@ -83,5 +83,5 @@ viewMain context model =
 
             Just budget ->
                 [ h2 [] [ text "Payees:" ]
-                , Helpers.PrintAny.view budget.payeeLocations
+                , Helpers.PrintAny.view budget.masterCategories
                 ]
