@@ -19,17 +19,21 @@ import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
 import Id exposing (Id)
+import Process
 import Return2 as R2
 import Return3 as R3 exposing (Return)
+import Task
 
 
 type alias Model =
     { budgetId : Id
+    , budget : Maybe Budget
     }
 
 
 type Msg
-    = BackButtonClicked
+    = AddBudgetAsync
+    | BackButtonClicked
 
 
 type Reply
@@ -46,26 +50,44 @@ init : Context -> Props -> Return Model Msg Reply
 init context props =
     let
         model =
-            props
+            { budgetId = props.budgetId, budget = Nothing }
     in
-    if isLoading context model then
-        model
-            |> R2.withNoCmd
-            |> R3.withReply (RequestedBudget props.budgetId)
+    case Context.getBudget context model.budgetId of
+        Nothing ->
+            model
+                |> R2.withNoCmd
+                |> R3.withReply (RequestedBudget props.budgetId)
 
-    else
-        model
-            |> R3.withNothing
+        Just _ ->
+            model
+                |> R2.withCmd (putBudgetInModelAsync context props.budgetId)
+                |> R3.withNoReply
 
 
 isLoading : Context -> Model -> Bool
 isLoading context model =
-    Context.getBudget context model.budgetId == Nothing
+    (Context.getBudget context model.budgetId == Nothing) || (model.budget == Nothing)
+
+
+putBudgetInModelAsync : Context -> Id -> Cmd Msg
+putBudgetInModelAsync context budgetId =
+    case Context.getBudget context budgetId of
+        Nothing ->
+            Cmd.none
+
+        Just budget ->
+            Process.sleep 0.0
+                |> Task.andThen (always <| Task.succeed AddBudgetAsync)
+                |> Task.perform identity
 
 
 update : Context -> Msg -> Model -> Return Model Msg Reply
 update context msg model =
     case msg of
+        AddBudgetAsync ->
+            { model | budget = Context.getBudget context model.budgetId }
+                |> R3.withNothing
+
         BackButtonClicked ->
             model |> R2.withNoCmd |> R3.withReply GoToBudgetSelector
 
@@ -94,15 +116,11 @@ viewTopBar context model =
 
 viewMain : Context -> Model -> Html Msg
 viewMain context model =
-    let
-        maybeBudget =
-            Context.getBudget context model.budgetId
-    in
     div [ class "main shadow-box no-hover" ] <|
-        case maybeBudget of
+        case model.budget of
             Nothing ->
                 [ text "Loading..." ]
 
             Just budget ->
-                [ text <| "Loaded budget: " ++ budget.name
+                [ Helpers.PrintAny.view budget
                 ]

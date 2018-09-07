@@ -73,7 +73,20 @@ update msg (( context, page ) as model) =
         GotBudget (Ok budget) ->
             model
                 |> Model.mapContext (Context.insertBudget budget)
-                |> R2.withNoCmd
+                |> (case page of
+                        Page.Dashboard subModel ->
+                            -- If the budget matches the current dashboard,
+                            -- re-initialize it so it has a chance to show a
+                            -- loading spinner
+                            if subModel.budgetId == budget.id then
+                                handleRoute (Router.Dashboard budget.id)
+
+                            else
+                                R2.withNoCmd
+
+                        _ ->
+                            R2.withNoCmd
+                   )
 
         GotBudget (Err error) ->
             handleHttpError error model
