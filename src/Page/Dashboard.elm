@@ -1,4 +1,12 @@
-module Page.Dashboard exposing (Model, Msg, Reply(..), init, update, view)
+module Page.Dashboard exposing
+    ( Model
+    , Msg
+    , Reply(..)
+    , init
+    , isLoading
+    , update
+    , view
+    )
 
 import API
 import Data.Budget as Budget exposing (Budget)
@@ -36,14 +44,23 @@ type alias Props =
 
 init : Context -> Props -> Return Model Msg Reply
 init context props =
-    case Context.getBudget context props.budgetId of
-        Nothing ->
+    let
+        model =
             props
-                |> R2.withNoCmd
-                |> R3.withReply (RequestedBudget props.budgetId)
+    in
+    if isLoading context model then
+        model
+            |> R2.withNoCmd
+            |> R3.withReply (RequestedBudget props.budgetId)
 
-        Just budget ->
-            props |> R3.withNothing
+    else
+        model
+            |> R3.withNothing
+
+
+isLoading : Context -> Model -> Bool
+isLoading context model =
+    Context.getBudget context model.budgetId == Nothing
 
 
 update : Context -> Msg -> Model -> Return Model Msg Reply

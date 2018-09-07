@@ -1,4 +1,12 @@
-module Page.BudgetSelector exposing (Model, Msg, Reply(..), init, update, view)
+module Page.BudgetSelector exposing
+    ( Model
+    , Msg
+    , Reply(..)
+    , init
+    , isLoading
+    , update
+    , view
+    )
 
 import Data.Budget as Budget exposing (BudgetSummary)
 import Data.Context exposing (Context)
@@ -34,9 +42,23 @@ type alias Props =
 
 init : Context -> Props -> Return Model Msg Reply
 init context props =
-    props
-        |> R2.withNoCmd
-        |> R3.withReply RequestedBudgetSummaries
+    let
+        model =
+            props
+    in
+    if isLoading context model then
+        model
+            |> R2.withNoCmd
+            |> R3.withReply RequestedBudgetSummaries
+
+    else
+        model
+            |> R3.withNothing
+
+
+isLoading : Context -> Model -> Bool
+isLoading context model =
+    (context.budgetSummaries |> Db.toList |> List.length) == 0
 
 
 update : Context -> Msg -> Model -> Return Model Msg Reply
