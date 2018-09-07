@@ -33,7 +33,6 @@ type Msg
 
 type Reply
     = SelectedBudget Id
-    | RequestedBudgetSummaries
 
 
 type alias Props =
@@ -46,14 +45,8 @@ init context props =
         model =
             props
     in
-    if isLoading context model then
-        model
-            |> R2.withNoCmd
-            |> R3.withReply RequestedBudgetSummaries
-
-    else
-        model
-            |> R3.withNothing
+    model
+        |> R3.withNothing
 
 
 isLoading : Context -> Model -> Bool

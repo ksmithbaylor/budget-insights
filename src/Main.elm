@@ -6,6 +6,7 @@ import Flags exposing (Flags)
 import Html exposing (Html)
 import Model exposing (Model)
 import Msg exposing (Msg)
+import Return2 as R2
 import Router
 import Update
 import Url exposing (Url)
@@ -25,8 +26,16 @@ main =
 
 init : Flags -> Url -> Navigation.Key -> ( Model, Cmd Msg )
 init flags url key =
-    Model.init flags key
-        |> Update.update (onUrlChange url)
+    let
+        model =
+            Model.init flags key
+
+        ( updatedModel, routeCmd ) =
+            Update.update (onUrlChange url) model
+    in
+    updatedModel
+        |> R2.withCmd (Update.initCmd model)
+        |> R2.addCmd routeCmd
 
 
 onUrlChange : Url -> Msg

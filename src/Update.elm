@@ -1,4 +1,4 @@
-module Update exposing (update)
+module Update exposing (initCmd, update)
 
 import API
 import Browser
@@ -17,6 +17,11 @@ import Return2 as R2
 import Return3 as R3
 import Router exposing (Route)
 import Url exposing (Url)
+
+
+initCmd : Model -> Cmd Msg
+initCmd ( context, _ ) =
+    API.fetchBudgetSummaries context.token GotBudgetSummaries
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -97,10 +102,6 @@ handleBudgetSelectorReply subModel maybeReply (( context, page ) as model) =
         Just (BudgetSelector.SelectedBudget id) ->
             result
                 |> R2.addCmd (Router.goTo context (Router.Dashboard id))
-
-        Just BudgetSelector.RequestedBudgetSummaries ->
-            result
-                |> R2.addCmd (API.fetchBudgetSummaries context.token GotBudgetSummaries)
 
 
 handleDashboardReply : Dashboard.Model -> Maybe Dashboard.Reply -> Model -> ( Model, Cmd Msg )

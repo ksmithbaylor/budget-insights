@@ -104,6 +104,5 @@ viewMain context model =
                 [ text "Loading..." ]
 
             Just budget ->
-                [ h2 [] [ text budget.name ]
-                , Helpers.PrintAny.view budget
+                [ Helpers.PrintAny.view budget
                 ]
