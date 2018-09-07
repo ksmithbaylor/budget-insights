@@ -1,4 +1,15 @@
-module Data.Money exposing (Money, add, create, decodeMoney, format, fromYNAB, map, map2, percent, subtract)
+module Data.Money exposing
+    ( Money
+    , add
+    , create
+    , decoder
+    , format
+    , fromYNAB
+    , map
+    , map2
+    , percent
+    , subtract
+    )
 
 import FormatNumber
 import FormatNumber.Locales exposing (usLocale)
@@ -9,8 +20,8 @@ type Money
     = Money Int
 
 
-decodeMoney : Decoder Money
-decodeMoney =
+decoder : Decoder Money
+decoder =
     int |> andThen (fromYNAB >> succeed)
 
 

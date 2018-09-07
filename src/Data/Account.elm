@@ -1,6 +1,6 @@
 module Data.Account exposing (Account, decoder)
 
-import Data.Money exposing (Money, decodeMoney)
+import Data.Money as Money exposing (Money)
 import Db exposing (Db)
 import Helpers.Decode exposing (..)
 import Id exposing (Id)
@@ -37,9 +37,9 @@ decoder =
         |> required "closed" bool
         |> required "deleted" bool
         |> required "note" (nullable string)
-        |> required "balance" decodeMoney
-        |> required "cleared_balance" decodeMoney
-        |> required "uncleared_balance" decodeMoney
+        |> required "balance" Money.decoder
+        |> required "cleared_balance" Money.decoder
+        |> required "uncleared_balance" Money.decoder
 
 
 type Type
