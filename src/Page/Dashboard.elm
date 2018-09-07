@@ -82,6 +82,6 @@ viewMain context model =
                 [ text "Loading..." ]
 
             Just budget ->
-                [ h2 [] [ text "Payees:" ]
-                , Helpers.PrintAny.view budget.masterCategories
+                [ h2 [] [ text budget.name ]
+                , Helpers.PrintAny.view budget
                 ]

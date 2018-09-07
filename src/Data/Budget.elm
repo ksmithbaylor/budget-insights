@@ -8,6 +8,7 @@ module Data.Budget exposing
     )
 
 import Data.Account as Account exposing (Account)
+import Data.Category as Category exposing (Category)
 import Data.MasterCategory as MasterCategory exposing (MasterCategory)
 import Data.Payee as Payee exposing (Payee)
 import Data.PayeeLocation as PayeeLocation exposing (PayeeLocation)
@@ -63,8 +64,8 @@ type alias Budget =
     , payees : Db Payee
     , payeeLocations : Db PayeeLocation
     , masterCategories : Db MasterCategory
+    , categories : Db Category
 
-    -- , categories : Categories
     -- , months : Months
     -- , transactions : Transactions
     -- , subTransactions : SubTransactions
@@ -83,6 +84,7 @@ decodeBudget =
         |> required "payees" (listToDb Payee.decoder)
         |> required "payee_locations" (listToDb PayeeLocation.decoder)
         |> required "category_groups" (listToDb MasterCategory.decoder)
+        |> required "categories" (listToDb Category.decoder)
 
 
 decodeBudgetResponse : Decoder Budget
