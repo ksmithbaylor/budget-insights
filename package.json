@@ -10,7 +10,7 @@
     "prod": "npm-run-all frontend:build --parallel frontend:serve backend:prod",
     "test": "elm-test",
     "test:watch": "elm-test --watch",
-    "frontend:dev": "elm-app start",
+    "frontend:dev": "ELM_DEBUGGER=false elm-app start",
     "frontend:build": "elm-app build",
     "frontend:serve": "serve -s build",
     "backend:dev": "nodemon -w src/server.js src/server.js",
