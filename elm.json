@@ -8,7 +8,6 @@
         "direct": {
             "Chadtech/id": "4.0.0",
             "Chadtech/return": "1.0.2",
-            "Janiczek/cmd-extra": "1.0.0",
             "NoRedInk/elm-json-decode-pipeline": "1.0.0",
             "cuducos/elm-format-number": "6.0.2",
             "elm/browser": "1.0.0",
@@ -20,7 +19,6 @@
             "elm-community/json-extra": "4.0.0",
             "justinmimbs/date": "1.0.0",
             "jweir/elm-iso8601": "4.0.3",
-            "the-sett/elm-update-helper": "1.4.1",
             "turboMaCk/any-dict": "1.0.1"
         },
         "indirect": {
