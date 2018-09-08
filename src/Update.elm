@@ -12,6 +12,7 @@ import Msg exposing (Msg(..))
 import Page
 import Page.BudgetSelector as BudgetSelector
 import Page.Dashboard as Dashboard
+import Page.SomethingWentWrong as SomethingWentWrong
 import Platform exposing (Router)
 import Return2 as R2
 import Return3 as R3
@@ -156,7 +157,10 @@ handleRoute route (( context, page ) as model) =
         Router.Oops ->
             Page.Error
                 |> Model.setPage model
-                |> R2.withNoCmd
+                |> R2.withCmd
+                    (SomethingWentWrong.possiblyRedirect context
+                        (Router.goTo context Router.BudgetSelector)
+                    )
 
 
 handleRoutingError : String -> Model -> ( Model, Cmd Msg )

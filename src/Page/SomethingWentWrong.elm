@@ -1,10 +1,22 @@
-module Page.SomethingWentWrong exposing (view)
+module Page.SomethingWentWrong exposing (possiblyRedirect, view)
 
 import Data.Context exposing (Context)
 import Data.CustomError exposing (..)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Http
+
+
+possiblyRedirect : Context -> Cmd msg -> Cmd msg
+possiblyRedirect { error } redirectCmd =
+    case error of
+        Just _ ->
+            -- If there is actually an error, do nothing
+            Cmd.none
+
+        Nothing ->
+            -- If there is no error, redirect using the passed-in Cmd
+            redirectCmd
 
 
 view : Context -> Html msg
