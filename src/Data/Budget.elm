@@ -22,35 +22,6 @@ import Json.Decode as Decode exposing (..)
 import Json.Decode.Pipeline exposing (..)
 
 
-type alias BudgetSummary =
-    { id : Id
-    , name : String
-    , lastModified : Time
-    , firstMonth : Date
-    , lastMonth : Date
-    }
-
-
-decodeBudgetSummary : Decoder BudgetSummary
-decodeBudgetSummary =
-    succeed BudgetSummary
-        |> required "id" Id.decoder
-        |> required "name" string
-        |> required "last_modified_on" time
-        |> required "first_month" date
-        |> required "last_month" date
-
-
-decodeBudgetSummaries : Decoder (Db BudgetSummary)
-decodeBudgetSummaries =
-    succeed dbById
-        |> requiredAt [ "data", "budgets" ] (list decodeBudgetSummary)
-
-
-
--- Budget
-
-
 type alias Budget =
     { id : Id
     , name : String
@@ -87,3 +58,32 @@ decodeBudgetResponse : Decoder Budget
 decodeBudgetResponse =
     succeed identity
         |> requiredAt [ "data", "budget" ] decodeBudget
+
+
+
+-- BudgetSummary
+
+
+type alias BudgetSummary =
+    { id : Id
+    , name : String
+    , lastModified : Time
+    , firstMonth : Date
+    , lastMonth : Date
+    }
+
+
+decodeBudgetSummary : Decoder BudgetSummary
+decodeBudgetSummary =
+    succeed BudgetSummary
+        |> required "id" Id.decoder
+        |> required "name" string
+        |> required "last_modified_on" time
+        |> required "first_month" date
+        |> required "last_month" date
+
+
+decodeBudgetSummaries : Decoder (Db BudgetSummary)
+decodeBudgetSummaries =
+    succeed dbById
+        |> requiredAt [ "data", "budgets" ] (list decodeBudgetSummary)
