@@ -1,6 +1,9 @@
 module View exposing (view)
 
 import Browser
+import Element exposing (..)
+import Element.Background as Background
+import Element.Font as Font
 import Html exposing (Html, div)
 import Model exposing (Model)
 import Msg exposing (Msg(..))
@@ -26,13 +29,13 @@ viewPage ( context, page ) =
                 Page.BudgetSelector subModel ->
                     subModel
                         |> BudgetSelector.view context
-                        |> Html.map BudgetSelectorMsg
+                        |> Element.map BudgetSelectorMsg
                         |> Tuple.pair (BudgetSelector.isLoading context subModel)
 
                 Page.Dashboard subModel ->
                     subModel
                         |> Dashboard.view context
-                        |> Html.map DashboardMsg
+                        |> Element.map DashboardMsg
                         |> Tuple.pair (Dashboard.isLoading context subModel)
 
                 Page.Error ->
@@ -40,10 +43,22 @@ viewPage ( context, page ) =
                         |> Tuple.pair False
 
                 Page.Blank ->
-                    div [] []
+                    Element.none
                         |> Tuple.pair False
     in
     -- Eventually, add stuff like header/footer here
     [ UI.Loader.view loading
-    , mainContent
+    , Element.layout
+        [ width fill
+        , height fill
+        , padding 24
+        , Background.color (rgb 0.9 0.9 0.9)
+        , Font.size 16
+        , Font.family
+            [ Font.typeface "Avenir"
+            , Font.typeface "Helvetica"
+            , Font.sansSerif
+            ]
+        ]
+        mainContent
     ]

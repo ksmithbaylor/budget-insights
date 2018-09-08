@@ -13,16 +13,17 @@ import Data.Budget as Budget exposing (Budget)
 import Data.Context as Context exposing (Context)
 import Db exposing (Db)
 import Dict.Any as AnyDict
+import Element exposing (..)
+import Element.Events exposing (..)
+import Element.Font as Font
 import Flags exposing (Flags)
 import Helpers.PrintAny
-import Html exposing (..)
-import Html.Attributes exposing (..)
-import Html.Events exposing (..)
 import Id exposing (Id)
 import Process
 import Return2 as R2
 import Return3 as R3 exposing (Return)
 import Task
+import UI.Common exposing (..)
 
 
 type alias Model =
@@ -92,15 +93,15 @@ update context msg model =
             model |> R2.withNoCmd |> R3.withReply GoToBudgetSelector
 
 
-view : Context -> Model -> Html Msg
+view : Context -> Model -> Element Msg
 view context model =
-    div [ class "dashboard" ]
+    column [ spacing 24, width fill ]
         [ viewTopBar context model
         , viewMain context model
         ]
 
 
-viewTopBar : Context -> Model -> Html Msg
+viewTopBar : Context -> Model -> Element Msg
 viewTopBar context model =
     let
         budgetName =
@@ -108,19 +109,29 @@ viewTopBar context model =
                 |> Maybe.map .name
                 |> Maybe.withDefault ""
     in
-    div [ class "top-bar" ]
-        [ button [ class "back shadow-box", onClick BackButtonClicked ] [ text "⬅" ]
-        , span [ class "budget-name" ] [ text budgetName ]
+    row [ width fill, spacing 16 ]
+        [ viewBackButton
+        , el [ Font.size 20, Font.bold ] (text budgetName)
         ]
 
 
-viewMain : Context -> Model -> Html Msg
+viewBackButton : Element Msg
+viewBackButton =
+    shadowBox True [ paddingXY 8 4, onClick BackButtonClicked ] <|
+        el [ Font.size 24 ] (text "⬅")
+
+
+viewMain : Context -> Model -> Element Msg
 viewMain context model =
-    div [ class "main shadow-box no-hover" ] <|
+    shadowBox False [ width fill ] <|
         case model.budget of
             Nothing ->
-                [ text "Loading..." ]
+                text "Loading..."
 
             Just budget ->
-                [ text <| (++) "Months: " <| String.fromInt <| List.length <| Db.toList <| budget.months
-                ]
+                budget.months
+                    |> Db.toList
+                    |> List.length
+                    |> String.fromInt
+                    |> (++) "Months: "
+                    |> text

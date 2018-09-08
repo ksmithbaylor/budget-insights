@@ -19,6 +19,7 @@
             "elm-community/json-extra": "4.0.0",
             "justinmimbs/date": "1.0.0",
             "jweir/elm-iso8601": "4.0.3",
+            "mdgriffith/elm-ui": "1.0.0",
             "turboMaCk/any-dict": "1.0.1"
         },
         "indirect": {

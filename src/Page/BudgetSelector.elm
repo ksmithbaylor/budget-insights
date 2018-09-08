@@ -12,15 +12,18 @@ import Data.Budget as Budget exposing (BudgetSummary)
 import Data.Context exposing (Context)
 import Db exposing (Db)
 import Dict.Any as AnyDict
+import Element exposing (..)
+import Element.Background as Background
+import Element.Border as Border
+import Element.Events exposing (..)
+import Element.Font as Font
 import Flags exposing (Flags)
-import Html exposing (..)
-import Html.Attributes exposing (..)
-import Html.Events exposing (..)
 import Http
 import ISO8601
 import Id exposing (Id)
 import Return2 as R2
 import Return3 as R3 exposing (Return, reply)
+import UI.Common exposing (..)
 
 
 type alias Model =
@@ -63,39 +66,31 @@ update context msg model =
                 |> R3.withReply (SelectedBudget id)
 
 
-view : Context -> Model -> Html Msg
+view : Context -> Model -> Element Msg
 view context model =
-    let
-        contents =
-            div [ class "flow" ]
-                (context.budgetSummaries
-                    |> Db.toList
-                    |> List.map Tuple.second
-                    |> List.sortBy (.lastModified >> ISO8601.toString)
-                    |> List.reverse
-                    |> List.map viewBudget
-                )
-    in
-    div [ class "budget-list" ]
-        [ h1 [] [ text "Available Budgets" ]
-        , contents
+    column [ spacing 24 ]
+        [ header "Available Budgets"
+        , column [ spacing 16 ]
+            (context.budgetSummaries
+                |> Db.toList
+                |> List.map Tuple.second
+                |> List.sortBy (.lastModified >> ISO8601.toString)
+                |> List.reverse
+                |> List.map viewBudget
+            )
         ]
 
 
-viewBudget : BudgetSummary -> Html Msg
+viewBudget : BudgetSummary -> Element Msg
 viewBudget budget =
-    -- a [ class "budget shadow-box", href ("/budgets/" ++ Id.toString budget.id) ]
-    div [ class "budget shadow-box", onClick (BudgetClicked budget.id) ]
-        [ div [ class "budget-name" ] [ text budget.name ]
-        , div []
-            [ span [] [ text "Last Modified: " ]
-            , span [ class "light" ]
-                [ text <|
-                    (ISO8601.toString budget.lastModified
-                        |> String.split "T"
-                        |> List.head
-                        |> Maybe.withDefault ""
-                    )
-                ]
+    shadowBox True [ onClick (BudgetClicked budget.id) ] <|
+        column [ spacing 8 ]
+            [ el [ Font.bold, Font.size 20 ] (text budget.name)
+            , text
+                (ISO8601.toString budget.lastModified
+                    |> String.split "T"
+                    |> List.head
+                    |> Maybe.withDefault ""
+                    |> (++) "Last Modified: "
+                )
             ]
-        ]
