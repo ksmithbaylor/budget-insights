@@ -17,6 +17,7 @@ import Element exposing (..)
 import Element.Events exposing (..)
 import Element.Font as Font
 import Flags exposing (Flags)
+import Helpers.PrintAny
 import Id exposing (Id)
 import Process
 import Return2 as R2
@@ -123,14 +124,21 @@ viewBackButton =
 viewMain : Context -> Model -> Element Msg
 viewMain context model =
     shadowBox False [ width fill ] <|
-        case model.budget of
-            Nothing ->
-                text "Loading..."
+        column [ spacing 16 ] <|
+            case model.budget of
+                Nothing ->
+                    [ text "Loading..." ]
 
-            Just budget ->
-                budget.months
-                    |> Db.toList
-                    |> List.length
-                    |> String.fromInt
-                    |> (++) "Months: "
-                    |> text
+                Just budget ->
+                    [ budget.transactions
+                        |> Db.toList
+                        |> List.length
+                        |> String.fromInt
+                        |> (++) "Transactions: "
+                        |> text
+                    , budget.transactions
+                        |> Db.toList
+                        |> List.take 5
+                        |> Helpers.PrintAny.view
+                        |> html
+                    ]
