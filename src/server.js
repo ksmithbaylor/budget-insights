@@ -15,7 +15,7 @@ app.use(cors());
 
 app.get('/token', (req, res) => {
   res.json({
-    token: process.env.YNAB_TOKEN,
+    token: process.env.ELM_APP_YNAB_TOKEN,
   });
 });
 
