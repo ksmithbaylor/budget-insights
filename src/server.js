@@ -13,12 +13,6 @@ const ttl = 60 * 60 * 1000; // one hour
 
 app.use(cors());
 
-app.get('/token', (req, res) => {
-  res.json({
-    token: process.env.ELM_APP_YNAB_TOKEN,
-  });
-});
-
 app.get('/ynab/*', (req, res) => {
   const path = req.path.slice(5);
   if (cache.has(path)) {
