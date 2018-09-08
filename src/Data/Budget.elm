@@ -4,7 +4,6 @@ module Data.Budget exposing
     , decodeBudgetResponse
     , decodeBudgetSummaries
     , decodeBudgetSummary
-    , defaultBudgetId
     )
 
 import Data.Account as Account exposing (Account)
@@ -21,11 +20,6 @@ import ISO8601 exposing (Time)
 import Id exposing (Id)
 import Json.Decode as Decode exposing (..)
 import Json.Decode.Pipeline exposing (..)
-
-
-defaultBudgetId : Id
-defaultBudgetId =
-    Id.fromString "1b1f448f-8750-40a9-b744-f772f4898b91"
 
 
 type alias BudgetSummary =

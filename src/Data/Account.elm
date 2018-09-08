@@ -9,10 +9,6 @@ import Json.Decode.Extra exposing (fromResult)
 import Json.Decode.Pipeline exposing (..)
 
 
-
--- Account
-
-
 type alias Account =
     { id : Id
     , name : String
@@ -40,6 +36,10 @@ decoder =
         |> required "balance" Money.decoder
         |> required "cleared_balance" Money.decoder
         |> required "uncleared_balance" Money.decoder
+
+
+
+-- Helper types
 
 
 type AccountType
