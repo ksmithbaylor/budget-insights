@@ -130,13 +130,13 @@ viewMain context model =
                     [ text "Loading..." ]
 
                 Just budget ->
-                    [ budget.transactions
+                    [ budget.subTransactions
                         |> Db.toList
                         |> List.length
                         |> String.fromInt
                         |> (++) "Transactions: "
                         |> text
-                    , budget.transactions
+                    , budget.subTransactions
                         |> Db.toList
                         |> List.take 5
                         |> Helpers.PrintAny.view

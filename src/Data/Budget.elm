@@ -12,6 +12,7 @@ import Data.MasterCategory as MasterCategory exposing (MasterCategory)
 import Data.Month as Month exposing (Month)
 import Data.Payee as Payee exposing (Payee)
 import Data.PayeeLocation as PayeeLocation exposing (PayeeLocation)
+import Data.SubTransaction as SubTransaction exposing (SubTransaction)
 import Data.Transaction as Transaction exposing (Transaction)
 import Date exposing (Date)
 import Db exposing (Db)
@@ -34,8 +35,8 @@ type alias Budget =
     , categories : Db Category
     , months : Db Month
     , transactions : Db Transaction
+    , subTransactions : Db SubTransaction
 
-    -- , subTransactions : SubTransactions
     -- , scheduledTransactions : ScheduledTransactions
     -- , scheduledSubTransactions : ScheduledSubTransactions
     }
@@ -54,6 +55,7 @@ decodeBudget =
         |> required "categories" (listToDb Category.decoder)
         |> required "months" (listToDb Month.decoder)
         |> required "transactions" (listToDb Transaction.decoder)
+        |> required "subtransactions" (listToDb SubTransaction.decoder)
 
 
 decodeBudgetResponse : Decoder Budget
