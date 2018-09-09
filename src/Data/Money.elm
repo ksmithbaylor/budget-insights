@@ -62,4 +62,10 @@ percent p (Money value) =
 
 format : Money -> String
 format (Money value) =
-    (toFloat value / 100) |> FormatNumber.format usLocale |> (++) "$"
+    if value < 0 then
+        "($"
+            ++ ((toFloat (-1 * value) / 100) |> FormatNumber.format usLocale)
+            ++ ")"
+
+    else
+        (toFloat value / 100) |> FormatNumber.format usLocale |> (++) "$"
