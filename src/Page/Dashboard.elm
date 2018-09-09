@@ -130,4 +130,10 @@ viewMain context model =
                     [ text "Loading..." ]
 
                 Just budget ->
-                    [ budget.currencyFormat |> Helpers.PrintAny.view |> html ]
+                    [ budget
+                        |> Debug.toString
+                        |> String.length
+                        |> String.fromInt
+                        |> (++) "Decoded bytes: "
+                        |> text
+                    ]
