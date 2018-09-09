@@ -8,6 +8,7 @@ module Data.Budget exposing
 
 import Data.Account as Account exposing (Account)
 import Data.Category as Category exposing (Category)
+import Data.CurrencyFormat as CurrencyFormat exposing (CurrencyFormat)
 import Data.MasterCategory as MasterCategory exposing (MasterCategory)
 import Data.Month as Month exposing (Month)
 import Data.Payee as Payee exposing (Payee)
@@ -30,6 +31,8 @@ type alias Budget =
     { id : Id
     , name : String
     , lastModified : Time
+    , dateFormat : String
+    , currencyFormat : CurrencyFormat
     , accounts : Db Account
     , payees : Db Payee
     , payeeLocations : Db PayeeLocation
@@ -49,6 +52,8 @@ decodeBudget =
         |> required "id" Id.decoder
         |> required "name" string
         |> required "last_modified_on" time
+        |> requiredAt [ "date_format", "format" ] string
+        |> required "currency_format" CurrencyFormat.decoder
         |> required "accounts" (listToDb Account.decoder)
         |> required "payees" (listToDb Payee.decoder)
         |> required "payee_locations" (listToDb PayeeLocation.decoder)

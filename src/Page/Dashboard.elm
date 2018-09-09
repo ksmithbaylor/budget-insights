@@ -130,15 +130,4 @@ viewMain context model =
                     [ text "Loading..." ]
 
                 Just budget ->
-                    [ budget.scheduledSubTransactions
-                        |> Db.toList
-                        |> List.length
-                        |> String.fromInt
-                        |> (++) "scheduledSubTransactions: "
-                        |> text
-                    , budget.scheduledSubTransactions
-                        |> Db.toList
-                        |> List.take 5
-                        |> Helpers.PrintAny.view
-                        |> html
-                    ]
+                    [ budget.currencyFormat |> Helpers.PrintAny.view |> html ]
