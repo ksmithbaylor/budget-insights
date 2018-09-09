@@ -10,6 +10,7 @@ module Page.Dashboard exposing
 
 import API
 import Data.Context as Context exposing (Context)
+import Data.Money as Money
 import Data.YNAB.Budget as Budget exposing (Budget)
 import Database exposing (..)
 import Db exposing (Db)
@@ -20,6 +21,7 @@ import Element.Font as Font
 import Flags exposing (Flags)
 import Helpers.PrintAny
 import Id exposing (Id)
+import List.Extra
 import Process
 import Return2 as R2
 import Return3 as R3 exposing (Return)
@@ -131,20 +133,15 @@ viewMain context model =
                     [ text "Loading..." ]
 
                 Just budget ->
-                    let
-                        transactions =
-                            from .payees
-                                |> where_ (\p -> p.name < "B")
-                                |> orderBy (\p -> p.name)
-                                |> limit 10
-                                |> Database.all budget
-                                |> join .transactions
-                                    budget
-                                    (\payee transaction ->
-                                        transaction.payeeId == Just payee.id
-                                    )
-                    in
-                    [ transactions
-                        |> Helpers.PrintAny.view
-                        |> html
+                    [ from .transactions
+                        |> Database.all budget
+                        |> List.map .amount
+                        |> List.map Money.format
+                        |> Debug.toString
+                        |> text
+                        |> List.singleton
+                        |> paragraph []
+
+                    -- |> Helpers.PrintAny.view
+                    -- |> html
                     ]
