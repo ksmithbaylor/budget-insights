@@ -11,6 +11,7 @@ module Page.Dashboard exposing
 import API
 import Data.Context as Context exposing (Context)
 import Data.YNAB.Budget as Budget exposing (Budget)
+import Database
 import Db exposing (Db)
 import Dict.Any as AnyDict
 import Element exposing (..)
@@ -130,10 +131,21 @@ viewMain context model =
                     [ text "Loading..." ]
 
                 Just budget ->
-                    [ budget
-                        |> Debug.toString
-                        |> String.length
-                        |> String.fromInt
-                        |> (++) "Decoded bytes: "
-                        |> text
+                    let
+                        payees =
+                            budget
+                                |> Database.select .payees (\p -> p.name == "404 Movers")
+
+                        transactions =
+                            payees
+                                |> List.map
+                                    (\p ->
+                                        budget
+                                            |> Database.select .transactions (\t -> t.payeeId == Just p.id)
+                                            |> Tuple.pair p
+                                    )
+                    in
+                    [ transactions
+                        |> Helpers.PrintAny.view
+                        |> html
                     ]
