@@ -11,7 +11,7 @@ module Page.Dashboard exposing
 import API
 import Data.Context as Context exposing (Context)
 import Data.YNAB.Budget as Budget exposing (Budget)
-import Database
+import Database exposing (..)
 import Db exposing (Db)
 import Dict.Any as AnyDict
 import Element exposing (..)
@@ -132,17 +132,16 @@ viewMain context model =
 
                 Just budget ->
                     let
-                        payees =
-                            budget
-                                |> Database.select .payees (\p -> p.name == "404 Movers")
-
                         transactions =
-                            payees
-                                |> List.map
-                                    (\p ->
-                                        budget
-                                            |> Database.select .transactions (\t -> t.payeeId == Just p.id)
-                                            |> Tuple.pair p
+                            from .payees
+                                |> where_ (\p -> p.name < "B")
+                                |> orderBy (\p -> p.name)
+                                |> limit 10
+                                |> Database.all budget
+                                |> join .transactions
+                                    budget
+                                    (\payee transaction ->
+                                        transaction.payeeId == Just payee.id
                                     )
                     in
                     [ transactions
