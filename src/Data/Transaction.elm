@@ -1,4 +1,4 @@
-module Data.Transaction exposing (Transaction, decoder)
+module Data.Transaction exposing (FlagColor, Transaction, decodeFlagColor, decoder)
 
 import Data.Money as Money exposing (Money)
 import Date exposing (Date)
