@@ -1,4 +1,4 @@
-module Data.Payee exposing (Payee, decoder)
+module Data.YNAB.MasterCategory exposing (MasterCategory, decoder)
 
 import Helpers.Decode exposing (..)
 import Id exposing (Id)
@@ -7,18 +7,18 @@ import Json.Decode.Extra exposing (fromResult)
 import Json.Decode.Pipeline exposing (..)
 
 
-type alias Payee =
+type alias MasterCategory =
     { id : Id
     , name : String
-    , transferAccountId : Maybe Id
+    , hidden : Bool
     , deleted : Bool
     }
 
 
-decoder : Decoder Payee
+decoder : Decoder MasterCategory
 decoder =
-    succeed Payee
+    succeed MasterCategory
         |> required "id" Id.decoder
         |> required "name" string
-        |> required "transfer_account_id" (nullable Id.decoder)
+        |> required "hidden" bool
         |> required "deleted" bool

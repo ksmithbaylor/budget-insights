@@ -1,4 +1,4 @@
-module Data.SubTransaction exposing (SubTransaction, decoder)
+module Data.YNAB.SubTransaction exposing (SubTransaction, decoder)
 
 import Data.Money as Money exposing (Money)
 import Date exposing (Date)

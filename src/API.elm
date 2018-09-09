@@ -1,7 +1,7 @@
 module API exposing (Token, fetchBudgetById, fetchBudgetSummaries)
 
-import Data.Budget as Budget exposing (Budget, BudgetSummary, decodeBudgetResponse, decodeBudgetSummaries, decodeBudgetSummary)
 import Data.Money
+import Data.YNAB.Budget as Budget exposing (Budget, BudgetSummary, decodeBudgetResponse, decodeBudgetSummaries, decodeBudgetSummary)
 import Date exposing (Date)
 import Db exposing (Db)
 import Dict.Any as AnyDict

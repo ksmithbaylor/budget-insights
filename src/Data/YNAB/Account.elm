@@ -1,4 +1,4 @@
-module Data.Account exposing (Account, decoder)
+module Data.YNAB.Account exposing (Account, decoder)
 
 import Data.Money as Money exposing (Money)
 import Db exposing (Db)

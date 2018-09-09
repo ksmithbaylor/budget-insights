@@ -1,7 +1,7 @@
 module Msg exposing (Msg(..))
 
 import Browser exposing (UrlRequest)
-import Data.Budget exposing (Budget, BudgetSummary)
+import Data.YNAB.Budget exposing (Budget, BudgetSummary)
 import Db exposing (Db)
 import Http
 import Page.BudgetSelector as BudgetSelector

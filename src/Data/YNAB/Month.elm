@@ -1,7 +1,7 @@
-module Data.Month exposing (Month, decoder)
+module Data.YNAB.Month exposing (Month, decoder)
 
-import Data.Category as Category exposing (Category)
 import Data.Money as Money exposing (Money)
+import Data.YNAB.Category as Category exposing (Category)
 import Date exposing (Date)
 import Db exposing (Db)
 import Helpers.Decode exposing (..)

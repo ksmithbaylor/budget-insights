@@ -1,4 +1,4 @@
-module Data.CurrencyFormat exposing (CurrencyFormat, decoder)
+module Data.YNAB.CurrencyFormat exposing (CurrencyFormat, decoder)
 
 import Json.Decode exposing (..)
 import Json.Decode.Pipeline exposing (..)

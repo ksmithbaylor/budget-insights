@@ -1,4 +1,4 @@
-module Data.Budget exposing
+module Data.YNAB.Budget exposing
     ( Budget
     , BudgetSummary
     , decodeBudgetResponse
@@ -6,17 +6,17 @@ module Data.Budget exposing
     , decodeBudgetSummary
     )
 
-import Data.Account as Account exposing (Account)
-import Data.Category as Category exposing (Category)
-import Data.CurrencyFormat as CurrencyFormat exposing (CurrencyFormat)
-import Data.MasterCategory as MasterCategory exposing (MasterCategory)
-import Data.Month as Month exposing (Month)
-import Data.Payee as Payee exposing (Payee)
-import Data.PayeeLocation as PayeeLocation exposing (PayeeLocation)
-import Data.ScheduledSubTransaction as ScheduledSubTransaction exposing (ScheduledSubTransaction)
-import Data.ScheduledTransaction as ScheduledTransaction exposing (ScheduledTransaction)
-import Data.SubTransaction as SubTransaction exposing (SubTransaction)
-import Data.Transaction as Transaction exposing (Transaction)
+import Data.YNAB.Account as Account exposing (Account)
+import Data.YNAB.Category as Category exposing (Category)
+import Data.YNAB.CurrencyFormat as CurrencyFormat exposing (CurrencyFormat)
+import Data.YNAB.MasterCategory as MasterCategory exposing (MasterCategory)
+import Data.YNAB.Month as Month exposing (Month)
+import Data.YNAB.Payee as Payee exposing (Payee)
+import Data.YNAB.PayeeLocation as PayeeLocation exposing (PayeeLocation)
+import Data.YNAB.ScheduledSubTransaction as ScheduledSubTransaction exposing (ScheduledSubTransaction)
+import Data.YNAB.ScheduledTransaction as ScheduledTransaction exposing (ScheduledTransaction)
+import Data.YNAB.SubTransaction as SubTransaction exposing (SubTransaction)
+import Data.YNAB.Transaction as Transaction exposing (Transaction)
 import Date exposing (Date)
 import Db exposing (Db)
 import Dict.Any as AnyDict exposing (AnyDict)

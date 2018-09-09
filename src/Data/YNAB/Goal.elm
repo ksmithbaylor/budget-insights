@@ -1,4 +1,4 @@
-module Data.Goal exposing (Goal, decoder)
+module Data.YNAB.Goal exposing (Goal, decoder)
 
 import Data.Money as Money exposing (Money)
 import Date exposing (Date)

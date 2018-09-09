@@ -8,8 +8,8 @@ module Page.BudgetSelector exposing
     , view
     )
 
-import Data.Budget as Budget exposing (BudgetSummary)
 import Data.Context exposing (Context)
+import Data.YNAB.Budget as Budget exposing (BudgetSummary)
 import Db exposing (Db)
 import Dict.Any as AnyDict
 import Element exposing (..)

@@ -1,8 +1,8 @@
-module Data.ScheduledTransaction exposing (ScheduledTransaction, decoder)
+module Data.YNAB.ScheduledTransaction exposing (ScheduledTransaction, decoder)
 
-import Data.Account
 import Data.Money as Money exposing (Money)
-import Data.Transaction exposing (FlagColor, decodeFlagColor)
+import Data.YNAB.Account
+import Data.YNAB.Transaction exposing (FlagColor, decodeFlagColor)
 import Date exposing (Date)
 import Helpers.Decode exposing (..)
 import Id exposing (Id)

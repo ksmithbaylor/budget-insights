@@ -1,8 +1,8 @@
 module Router exposing (Route(..), fromUrl, goTo)
 
 import Browser.Navigation as Navigation
-import Data.Budget as Budget
 import Data.Context exposing (Context)
+import Data.YNAB.Budget as Budget
 import Id exposing (Id)
 import Url exposing (Url)
 import Url.Parser as Url exposing ((</>), Parser, s, top)

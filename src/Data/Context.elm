@@ -10,8 +10,8 @@ module Data.Context exposing
 
 import API exposing (Token)
 import Browser.Navigation as Navigation
-import Data.Budget exposing (Budget, BudgetSummary)
 import Data.CustomError exposing (CustomError)
+import Data.YNAB.Budget exposing (Budget, BudgetSummary)
 import Db exposing (Db)
 import Flags exposing (Flags)
 import Id exposing (Id)

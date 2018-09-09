@@ -1,7 +1,7 @@
-module Data.Category exposing (Category, decoder)
+module Data.YNAB.Category exposing (Category, decoder)
 
-import Data.Goal as Goal exposing (Goal)
 import Data.Money as Money exposing (Money)
+import Data.YNAB.Goal as Goal exposing (Goal)
 import Date exposing (Date)
 import Helpers.Decode exposing (..)
 import Id exposing (Id)

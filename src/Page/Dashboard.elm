@@ -9,8 +9,8 @@ module Page.Dashboard exposing
     )
 
 import API
-import Data.Budget as Budget exposing (Budget)
 import Data.Context as Context exposing (Context)
+import Data.YNAB.Budget as Budget exposing (Budget)
 import Db exposing (Db)
 import Dict.Any as AnyDict
 import Element exposing (..)

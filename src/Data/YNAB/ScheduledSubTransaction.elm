@@ -1,4 +1,4 @@
-module Data.ScheduledSubTransaction exposing (ScheduledSubTransaction, decoder)
+module Data.YNAB.ScheduledSubTransaction exposing (ScheduledSubTransaction, decoder)
 
 import Data.Money as Money exposing (Money)
 import Date exposing (Date)

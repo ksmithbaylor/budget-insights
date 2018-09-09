@@ -1,4 +1,4 @@
-module Data.PayeeLocation exposing (PayeeLocation, decoder)
+module Data.YNAB.PayeeLocation exposing (PayeeLocation, decoder)
 
 import Helpers.Decode exposing (..)
 import Id exposing (Id)
