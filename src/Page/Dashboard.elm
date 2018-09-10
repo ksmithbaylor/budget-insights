@@ -20,8 +20,10 @@ import Element.Events exposing (..)
 import Element.Font as Font
 import Flags exposing (Flags)
 import Helpers.PrintAny
+import Html
+import Html.Attributes
 import Id exposing (Id)
-import List.Extra
+import Json.Encode as Encode
 import Process
 import Return2 as R2
 import Return3 as R3 exposing (Return)
@@ -133,15 +135,10 @@ viewMain context model =
                     [ text "Loading..." ]
 
                 Just budget ->
-                    [ from .transactions
-                        |> Database.all budget
-                        |> List.map .amount
-                        |> List.map Money.format
-                        |> Debug.toString
-                        |> text
-                        |> List.singleton
-                        |> paragraph []
-
-                    -- |> Helpers.PrintAny.view
-                    -- |> html
+                    [ html <|
+                        Html.node "x-hello"
+                            [ Html.Attributes.property "name" (Encode.string "web components")
+                            , Html.Attributes.property "numbers" (Encode.list Encode.int [ 1, 2, 3, 4, 5 ])
+                            ]
+                            []
                     ]

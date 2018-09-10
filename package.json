@@ -21,7 +21,9 @@
     "caching-map": "^1.0.2",
     "cors": "^2.8.4",
     "dotenv": "^6.0.0",
-    "express": "^4.16.3"
+    "express": "^4.16.3",
+    "preact": "^8.3.1",
+    "skatejs": "^5.2.4"
   },
   "devDependencies": {
     "create-elm-app": "^2.0.0-rc2",

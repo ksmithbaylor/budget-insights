@@ -1,7 +1,9 @@
 import {Elm} from './Main.elm';
 import registerServiceWorker from './registerServiceWorker';
+import './Hello';
 
 import './UI/Loader.css';
+
 
 Elm.Main.init({
   flags: {
