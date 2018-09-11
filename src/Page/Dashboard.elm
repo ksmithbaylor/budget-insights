@@ -19,7 +19,6 @@ import Element exposing (..)
 import Element.Events exposing (..)
 import Element.Font as Font
 import Flags exposing (Flags)
-import Helpers.PrintAny
 import Html
 import Html.Attributes
 import Id exposing (Id)
@@ -135,10 +134,10 @@ viewMain context model =
                     [ text "Loading..." ]
 
                 Just budget ->
-                    [ html <|
-                        Html.node "x-hello"
-                            [ Html.Attributes.property "name" (Encode.string "web components")
-                            , Html.Attributes.property "numbers" (Encode.list Encode.int [ 1, 2, 3, 4, 5 ])
+                    [ el [ width fill, height fill ] <|
+                        webComponent "x-hello"
+                            [ ( "name", Encode.string "web component helper" )
+                            , ( "numbers", Encode.list Encode.int [ 1, 3, 2, 7, 4, 5, 9, 6, 0, 8 ] )
                             ]
                             []
                     ]
