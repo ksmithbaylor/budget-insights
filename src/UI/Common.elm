@@ -10,12 +10,12 @@ import Html.Attributes exposing (property)
 import Json.Encode
 
 
-webComponent : String -> List ( String, Json.Encode.Value ) -> List (Html msg) -> Element msg
-webComponent name props children =
+webComponent : String -> List ( String, Json.Encode.Value ) -> Element msg
+webComponent name props =
     html <|
         node name
             (props |> List.map (\( k, v ) -> property k v))
-            children
+            []
 
 
 htmlStyle : String -> String -> Attribute msg

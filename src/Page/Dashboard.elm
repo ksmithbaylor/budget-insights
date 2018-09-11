@@ -128,16 +128,14 @@ viewBackButton =
 viewMain : Context -> Model -> Element Msg
 viewMain context model =
     shadowBox False [ width fill ] <|
-        column [ spacing 16 ] <|
+        column [ spacing 16, width fill ] <|
             case model.budget of
                 Nothing ->
                     [ text "Loading..." ]
 
                 Just budget ->
-                    [ el [ width fill, height fill ] <|
-                        webComponent "x-hello"
-                            [ ( "name", Encode.string "web component helper" )
-                            , ( "numbers", Encode.list Encode.int [ 1, 3, 2, 7, 4, 5, 9, 6, 0, 8 ] )
-                            ]
-                            []
+                    [ webComponent "x-hello"
+                        [ ( "name", Encode.string "web component helper" )
+                        , ( "numbers", Encode.list Encode.int [ 1, 3, 2, 7, 4, 5, 9, 6, 0, 8 ] )
+                        ]
                     ]

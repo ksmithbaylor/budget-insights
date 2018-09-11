@@ -6,8 +6,33 @@ const Component = withComponent();
 class Hello extends Component {
   constructor() {
     super();
-    console.log('constructing!')
     this._chart = null;
+    this._chartRoot = null;
+    this._styles = null;
+  }
+
+  connectedCallback() {
+    this.addStyles();
+    this.addChartRoot();
+  }
+
+  addStyles() {
+    this._styles = document.createElement('style');
+    this._styles.innerHTML = `
+      :host {
+        width: 100%;
+        height: 500px;
+        display: block;
+      }
+    `;
+    this.renderRoot.append(this._styles);
+  }
+
+  addChartRoot() {
+    this._chartRoot = document.createElement('div');
+    this._chartRoot.style.width = '100%';
+    this._chartRoot.style.height = '100%';
+    this.renderRoot.append(this._chartRoot);
   }
 
   static get props() {
@@ -21,11 +46,11 @@ class Hello extends Component {
     return this.props.numbers.map(n => ({ y: n }));
   }
 
-  renderer(root) {
+  renderer(root, render) {
     if (!this._chart) {
-      this._chart = new CanvasJS.Chart(root, {
+      this._chart = new CanvasJS.Chart(this._chartRoot, {
         title: {
-          text: 'Adding some data'
+          text: 'Random data'
         },
         data: [
           {
@@ -37,14 +62,12 @@ class Hello extends Component {
     } else {
       this._chart.options.data[0].dataPoints = this.dataPoints()
     }
-    requestAnimationFrame(() => {
-      this._chart.render();
-    })
+    requestAnimationFrame(render);
+  }
+
+  render() {
+    this._chart.render();
   }
 }
 
 customElements.define("x-hello", Hello);
-
-const hello = document.createElement("x-hello");
-
-document.body.append(hello);
