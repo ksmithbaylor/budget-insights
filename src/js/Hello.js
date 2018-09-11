@@ -1,4 +1,4 @@
-import { props, withComponent } from "skatejs";
+import { props, withComponent } from 'skatejs';
 import CanvasJS from './vendor/canvasjs.min.js';
 
 const Component = withComponent();
@@ -20,9 +20,8 @@ class Hello extends Component {
     this._styles = document.createElement('style');
     this._styles.innerHTML = `
       :host {
-        width: 100%;
-        height: 500px;
-        display: block;
+        flex: 1;
+        display: flex;
       }
     `;
     this.renderRoot.append(this._styles);
@@ -31,7 +30,6 @@ class Hello extends Component {
   addChartRoot() {
     this._chartRoot = document.createElement('div');
     this._chartRoot.style.width = '100%';
-    this._chartRoot.style.height = '100%';
     this.renderRoot.append(this._chartRoot);
   }
 
@@ -54,13 +52,13 @@ class Hello extends Component {
         },
         data: [
           {
-            type: "spline",
+            type: 'spline',
             dataPoints: this.dataPoints()
           }
         ]
-      })
+      });
     } else {
-      this._chart.options.data[0].dataPoints = this.dataPoints()
+      this._chart.options.data[0].dataPoints = this.dataPoints();
     }
     requestAnimationFrame(render);
   }
@@ -70,4 +68,4 @@ class Hello extends Component {
   }
 }
 
-customElements.define("x-hello", Hello);
+customElements.define('x-hello', Hello);

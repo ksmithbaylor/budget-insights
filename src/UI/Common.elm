@@ -12,10 +12,11 @@ import Json.Encode
 
 webComponent : String -> List ( String, Json.Encode.Value ) -> Element msg
 webComponent name props =
-    html <|
-        node name
-            (props |> List.map (\( k, v ) -> property k v))
-            []
+    el [ width fill, height fill ] <|
+        html <|
+            node name
+                (props |> List.map (\( k, v ) -> property k v))
+                []
 
 
 htmlStyle : String -> String -> Attribute msg

@@ -99,7 +99,7 @@ update context msg model =
 
 view : Context -> Model -> Element Msg
 view context model =
-    column [ spacing 24, width fill ]
+    column [ spacing 24, width fill, height fill ]
         [ viewTopBar context model
         , viewMain context model
         ]
@@ -127,15 +127,14 @@ viewBackButton =
 
 viewMain : Context -> Model -> Element Msg
 viewMain context model =
-    shadowBox False [ width fill ] <|
-        column [ spacing 16, width fill ] <|
+    shadowBox False [ width fill, height fill ] <|
+        column [ spacing 16, width fill, height fill ] <|
             case model.budget of
                 Nothing ->
                     [ text "Loading..." ]
 
                 Just budget ->
                     [ webComponent "x-hello"
-                        [ ( "name", Encode.string "web component helper" )
-                        , ( "numbers", Encode.list Encode.int [ 1, 3, 2, 7, 4, 5, 9, 6, 0, 8 ] )
+                        [ ( "numbers", Encode.list Encode.int [ 1, 3, 2, 7, 4, 5, 9, 6, 0, 8 ] )
                         ]
                     ]
