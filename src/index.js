@@ -1,8 +1,10 @@
-import { Elm } from "./Main.elm";
-import registerServiceWorker from "./registerServiceWorker";
-import "./js/Hello";
+import { Elm } from './Main.elm';
+import registerServiceWorker from './registerServiceWorker';
+import registerAllWebComponents from './js/webcomponents';
 
-import "./UI/Loader.css";
+import './UI/Loader.css';
+
+registerAllWebComponents();
 
 Elm.Main.init({
   flags: {
