@@ -6,3 +6,4 @@ elm-package.json
 .env
 .vscode
 todo.txt
+module-graph.json
