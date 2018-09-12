@@ -3,7 +3,6 @@ module Main exposing (main)
 import Browser
 import Browser.Navigation as Navigation
 import Flags exposing (Flags)
-import Html exposing (Html)
 import Model exposing (Model)
 import Msg exposing (Msg)
 import Return2 as R2
@@ -13,6 +12,7 @@ import Url exposing (Url)
 import View
 
 
+main : Program Flags Model Msg
 main =
     Browser.application
         { init = init

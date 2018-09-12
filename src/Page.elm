@@ -7,5 +7,5 @@ import Page.Dashboard as Dashboard
 type Page
     = BudgetSelector BudgetSelector.Model
     | Dashboard Dashboard.Model
-    | Error
+    | SomethingWentWrong
     | Blank

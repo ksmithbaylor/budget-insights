@@ -1,7 +1,6 @@
 module API exposing (Token, fetchBudgetById, fetchBudgetSummaries)
 
-import Data.Money
-import Data.YNAB.Budget as Budget exposing (Budget, BudgetSummary, decodeBudgetResponse, decodeBudgetSummaries, decodeBudgetSummary)
+import Data.YNAB.Budget as Budget exposing (Budget, BudgetSummary)
 import Date exposing (Date)
 import Db exposing (Db)
 import Dict.Any as AnyDict
@@ -17,10 +16,6 @@ type alias Token =
     String
 
 
-
--- YNAB API
-
-
 ynabRequest : Token -> String -> Decoder a -> Http.Request a
 ynabRequest token path decoder =
     Http.request
@@ -34,13 +29,17 @@ ynabRequest token path decoder =
         }
 
 
+
+-- API calls
+
+
 fetchBudgetSummaries : Token -> (Result Http.Error (Db BudgetSummary) -> msg) -> Cmd msg
 fetchBudgetSummaries token msg =
-    ynabRequest token "/budgets" decodeBudgetSummaries
+    ynabRequest token "/budgets" Budget.decodeSummariesResponse
         |> Http.send msg
 
 
 fetchBudgetById : Token -> Id -> (Result Http.Error Budget -> msg) -> Cmd msg
 fetchBudgetById token id msg =
-    ynabRequest token ("/budgets/" ++ Id.toString id) decodeBudgetResponse
+    ynabRequest token ("/budgets/" ++ Id.toString id) Budget.decodeResponse
         |> Http.send msg

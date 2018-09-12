@@ -1,9 +1,9 @@
 module Data.YNAB.Budget exposing
     ( Budget
     , BudgetSummary
-    , decodeBudgetResponse
-    , decodeBudgetSummaries
-    , decodeBudgetSummary
+    , decodeResponse
+    , decodeSummariesResponse
+    , decodeSummary
     )
 
 import Data.YNAB.Account as Account exposing (Account)
@@ -66,8 +66,8 @@ decodeBudget =
         |> required "scheduled_subtransactions" (listToDb ScheduledSubTransaction.decoder)
 
 
-decodeBudgetResponse : Decoder Budget
-decodeBudgetResponse =
+decodeResponse : Decoder Budget
+decodeResponse =
     succeed identity
         |> requiredAt [ "data", "budget" ] decodeBudget
 
@@ -85,8 +85,8 @@ type alias BudgetSummary =
     }
 
 
-decodeBudgetSummary : Decoder BudgetSummary
-decodeBudgetSummary =
+decodeSummary : Decoder BudgetSummary
+decodeSummary =
     succeed BudgetSummary
         |> required "id" Id.decoder
         |> required "name" string
@@ -95,7 +95,7 @@ decodeBudgetSummary =
         |> required "last_month" date
 
 
-decodeBudgetSummaries : Decoder (Db BudgetSummary)
-decodeBudgetSummaries =
+decodeSummariesResponse : Decoder (Db BudgetSummary)
+decodeSummariesResponse =
     succeed dbById
-        |> requiredAt [ "data", "budgets" ] (list decodeBudgetSummary)
+        |> requiredAt [ "data", "budgets" ] (list decodeSummary)

@@ -155,7 +155,7 @@ handleRoute route (( context, page ) as model) =
                 |> R3.incorp handleDashboardReply model
 
         Router.Oops ->
-            Page.Error
+            Page.SomethingWentWrong
                 |> Model.setPage model
                 |> R2.withCmd
                     (SomethingWentWrong.possiblyRedirect context

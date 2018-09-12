@@ -38,7 +38,7 @@ viewPage ( context, page ) =
                         |> Element.map DashboardMsg
                         |> Tuple.pair (Dashboard.isLoading context subModel)
 
-                Page.Error ->
+                Page.SomethingWentWrong ->
                     SomethingWentWrong.view context
                         |> Tuple.pair False
 
