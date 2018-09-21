@@ -1,0 +1,9 @@
+[exclude]
+regexes: .*yarn.*
+    .*min\.js
+    .*module-graph.*
+    .*public.*
+    .*package\.json.*
+    .*elm\.json.*
+    .*README\.md.*
+    .*\.gitignore.*
