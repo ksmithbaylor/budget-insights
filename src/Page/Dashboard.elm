@@ -24,7 +24,7 @@ import Html.Attributes
 import Id exposing (Id)
 import Json.Encode as Encode
 import Process
-import Reports.DailyNetWorth
+import Reports.DailyNetWorth as DailyNetWorth
 import Return2 as R2
 import Return3 as R3 exposing (Return)
 import Task
@@ -135,8 +135,11 @@ viewMain context model =
                     [ text "Loading..." ]
 
                 Just budget ->
-                    -- [ webComponent "x-hello"
-                    --     [ ( "numbers", Encode.list Encode.int [ 1, 3, 2, 7, 4, 5, 9, 6, 0, 8 ] )
-                    --     ]
-                    -- ]
-                    [ text <| Debug.toString <| Reports.DailyNetWorth.report budget ]
+                    [ webComponent "x-daily-net-worth"
+                        [ ( "data", Encode.list DailyNetWorth.encodeDatum <| DailyNetWorth.report budget )
+                        ]
+                    ]
+
+
+
+-- [ text <| Debug.toString <| Reports.DailyNetWorth.report budget ]

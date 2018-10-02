@@ -1,5 +1,5 @@
-import Hello from './Hello';
+import DailyNetWorth from './DailyNetWorth';
 
 export default function registerAllWebComponents() {
-  customElements.define('x-hello', Hello);
+  customElements.define('x-daily-net-worth', DailyNetWorth);
 }

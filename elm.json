@@ -18,6 +18,7 @@
             "elm/url": "1.0.0",
             "elm-community/dict-extra": "2.3.1",
             "elm-community/json-extra": "4.0.0",
+            "elm-community/list-extra": "8.0.0",
             "justinmimbs/date": "3.1.1",
             "jweir/elm-iso8601": "5.0.2",
             "mdgriffith/elm-ui": "1.0.0",

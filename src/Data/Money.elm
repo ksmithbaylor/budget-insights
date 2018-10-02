@@ -3,6 +3,7 @@ module Data.Money exposing
     , add
     , create
     , decoder
+    , encoder
     , format
     , fromYNAB
     , map
@@ -14,6 +15,7 @@ module Data.Money exposing
 import FormatNumber
 import FormatNumber.Locales exposing (usLocale)
 import Json.Decode exposing (Decoder, andThen, int, succeed)
+import Json.Encode as Encode
 
 
 type Money
@@ -23,6 +25,11 @@ type Money
 decoder : Decoder Money
 decoder =
     int |> andThen (fromYNAB >> succeed)
+
+
+encoder : Money -> Encode.Value
+encoder (Money value) =
+    Encode.float <| toFloat value / 100
 
 
 fromYNAB : Int -> Money
