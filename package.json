@@ -14,7 +14,8 @@
     "frontend:build": "elm-app build",
     "frontend:serve": "serve -s build",
     "backend:dev": "nodemon -w src/server.js src/server.js",
-    "backend:prod": "node src/server.js"
+    "backend:prod": "node src/server.js",
+    "count": "zsh -c 'loc $(ls src/**/* | grep -v min.js)'"
   },
   "prettier": {
     "singleQuote": true
