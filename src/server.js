@@ -25,19 +25,20 @@ app.get('/ynab/*', (req, res) => {
     console.log(`             │ Fetching from YNAB api...`);
     axios
       .get(ynabBaseUrl + path, {
-        headers: {Authorization: req.header('Authorization')},
+        headers: { Authorization: req.header('Authorization') }
       })
       .then(response => {
         console.log(
-          `             ╰─𝆓  ${JSON.stringify(response.data).length} bytes`,
+          `             ╰─𝆓  ${JSON.stringify(response.data).length} bytes`
         );
-        cache.set(path, response.data, {ttl});
+        cache.set(path, response.data, { ttl });
         res.json(response.data);
       })
       .catch(err => {
         console.error(err);
-        res.json({message: 'unsuccessful request'});
+        res.json({ message: 'unsuccessful request' });
       });
   }
 });
+
 app.listen(4000);
